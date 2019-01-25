@@ -88,7 +88,11 @@ def create_credential():
 def normalize_RsaSignature2018(credential):
   """The normalisation operation will produce a canonical
   representation of the credential according to the URDNA2015
-  canonicalisation method"""
+  canonicalisation method.
+
+  Returns:
+    string containing the N-Quad representation of the normalised
+    credential"""
   return jsonld.normalize(credential, options={
         'algorithm': 'URDNA2015',
         'format': 'application/n-quads'
@@ -98,7 +102,15 @@ def normalize_RsaSignature2018(credential):
 def create_RsaSignature2018(credential, private_key):
   """Given a JSON-LD credential and a RSAPrivateKey, will
   return the signature of the credential according to the
-  RsaSignature2018 signature suite specification"""
+  RsaSignature2018 signature suite specification
+
+  Parameters:
+    credential: JSON-LD document in compact representation
+    public_key: rsa.PrivateKey object
+
+  Returns:
+    bytes containing the signature
+  """
   normalized = normalize_RsaSignature2018(credential)
   return private_key.sign(data=normalized.encode('utf-8'),
                           padding=padding.PKCS1v15(),
@@ -108,7 +120,13 @@ def create_RsaSignature2018(credential, private_key):
 def verify_RsaSignature2018(credential, public_key, signature):
   """Given a JSON-LD credential and a RSAPublicKey, will
   verify the signature of the credential according to the
-  RsaSignature2018 signature suite specification"""
+  RsaSignature2018 signature suite specification
+
+  Parameters:
+    credential: JSON-LD document in compact representation
+    public_key: rsa.PublicKey object
+    signature: bytes of the signature
+  """
   normalized = normalize_RsaSignature2018(credential)
   try:
     public_key.verify(signature, data=normalized.encode('utf-8'),
@@ -141,8 +159,10 @@ if __name__ == '__main__':
   credential['ocd:signature'] = ld_signature
   print(json.dumps(credential, indent=2))
 
+  # Removing the signature element from the credential for comparison
   stripped_credential = copy.deepcopy(credential)
   retrieved_signature = stripped_credential.pop('ocd:signature')
+
   signature_bytes = base64.urlsafe_b64decode(retrieved_signature['wid:signatureValue'].encode('utf-8'))
   verified_from_doc = verify_RsaSignature2018(stripped_credential, public_key, signature_bytes)
   assert verified_from_doc == True
