@@ -106,7 +106,7 @@ def create_RsaSignature2018(credential, private_key):
 
   Parameters:
     credential: JSON-LD document in compact representation
-    public_key: rsa.PrivateKey object
+    private_key: rsa.PrivateKey object
 
   Returns:
     bytes containing the signature
