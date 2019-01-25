@@ -1,5 +1,5 @@
 {
-  "@context": {
+  "@context": ["https://w3id.org/openbadges/v2", {
     "id": "@id",
     "type": "@type",
     "ocd": "http://std.ncvet.gov.in/cred/opencreds/v1#",
@@ -9,14 +9,11 @@
     "xsd": "http://www.w3.org/2001/XMLSchema#",
 
     "AlignmentObject": "schema:AlignmentObject",
-    "Assertion": "obi:Assertion",
     "AssessedEvidence": "ocd:AssessedEvidence",
     "Assessment": "ocd:Assessment",
-    "BadgeClass": "obi:BadgeClass",
     "CertificateExtension": "ocd:CertificateExtension",
     "CompositeIdentity": "ocd:CompositeIdentity",
     "Duration": "ocd:Duration",
-    "Evidence": "obi:Evidence",
     "SignatoryExtension": "ocd:SignatoryExtension",
     "TrainingExtension": "ocd:TrainingExtension",
 
@@ -25,7 +22,7 @@
     "assessedBy": { "@id": "ocd:assessedBy", "@type": "@id" },
     "assessedOn": { "@id": "ocd:assessedOn", "@type": "xsd:dateTime" },
     "issuedThrough": { "@id": "schema:issuedThrough" },
-    "components": { "@id": "ocd:components", "@type": "obi:IdentityObject" },
+    "components": { "@id": "ocd:components", "@type": "IdentityObject" },
     "composite": { "@id": "ocd:composite" },
     "designation": { "@id": "ocd:designation", "@type": "schema:text" },
     "dob": { "@id": "ocd:dob", "@type": "xsd:date" },
@@ -47,11 +44,11 @@
     "subject": { "@id": "ocd:subject", "@type": "ocd:CompositeIdentity" },
     "tag": { "@id": "ocd:tag", "@type": "schema:text" },
     "training": { "@id": "ocd:training", "@type": "ocd:TrainingExtension" },
-    "trainer": { "@id": "ocd:trainer", "@type": "obi:Profile" },
+    "trainer": { "@id": "ocd:trainer", "@type": "Profile" },
     "urn": { "@id": "ocd:urn", "@type": "schema:text" },
     "validFrom": { "@id": "schema:validFrom" },
     "value": { "@id": "ocd:value", "@type": "schema:text" }
-  },
+  }],
   "obi:validation": [{
     "obi:validatesType": "ocd:AssessedEvidence",
     "obi:validationSchema": "https://std.ncvet.gov.in/cred/opencreds/schema/AssessedEvidence.json"
