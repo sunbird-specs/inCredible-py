@@ -138,12 +138,28 @@ def verify_RsaSignature2018(credential, public_key, signature):
 
 
 def create_ld_signature(signature):
+  """
+  Parameters
+    signautre: signature bytes object
+  """
+  b64signature = base64.urlsafe_b64encode(signature)
   return {
     "@type": "RsaSignature2018",
     "wid:creator": "https://example.com/keys/1/sampleKey",
     "wid:created": "2019-01-22T12:38:44Z",
-    "wid:signatureValue": signature
+    "wid:signatureValue": b64signature.decode('utf-8')
   }
+
+
+def bytes_from_ld_signature(ld_signature):
+  """
+  Parameters:
+    ld_signatue: LinkedDataSignatures object containing a signatureValue
+                 key representing a base64 encoded signature of the
+                 document
+  """
+  b64signature = ld_signature['wid:signatureValue'].encode('utf-8')
+  return base64.urlsafe_b64decode(b64signature)
 
 
 if __name__ == '__main__':
@@ -155,16 +171,14 @@ if __name__ == '__main__':
   assert verified == True
   print('Signature verified from bytes', file=sys.stderr)
 
-  ld_signature = create_ld_signature(base64.urlsafe_b64encode(signature).decode('utf-8'))
+  ld_signature = create_ld_signature(signature)
   credential['ocd:signature'] = ld_signature
   print(json.dumps(credential, indent=2))
 
   # Removing the signature element from the credential for comparison
-  stripped_credential = copy.deepcopy(credential)
-  retrieved_signature = stripped_credential.pop('ocd:signature')
-
-  signature_bytes = base64.urlsafe_b64decode(retrieved_signature['wid:signatureValue'].encode('utf-8'))
-  verified_from_doc = verify_RsaSignature2018(stripped_credential, public_key, signature_bytes)
+  base_credential = copy.deepcopy(credential)
+  signature_bytes = bytes_from_ld_signature(base_credential.pop('ocd:signature'))
+  verified_from_doc = verify_RsaSignature2018(base_credential, public_key, signature_bytes)
   assert verified_from_doc == True
   print('Signature verified from doc', file=sys.stderr)
 
