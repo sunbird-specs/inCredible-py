@@ -45,7 +45,7 @@
     "signatory": { "@id": "ocd:signatory", "@type": "ocd:SignatoryExtension" },
     "signature": { "@id": "sec:signature" },
     "subject": { "@id": "ocd:subject", "@type": "ocd:CompositeIdentity" },
-    "tag": { "@id": "ocd:tag", "@type": "schema:text", },
+    "tag": { "@id": "ocd:tag", "@type": "schema:text" },
     "training": { "@id": "ocd:training", "@type": "ocd:TrainingExtension" },
     "trainer": { "@id": "ocd:trainer", "@type": "obi:Profile" },
     "urn": { "@id": "ocd:urn", "@type": "schema:text" },
