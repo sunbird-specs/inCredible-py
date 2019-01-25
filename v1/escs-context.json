@@ -57,21 +57,21 @@
     "obi:validationSchema": "https://std.ncvet.gov.in/cred/opencreds/schema/AssessedEvidence.json"
   }, {
     "obi:validatesType": "ocd:Assessment",
-    "obi:validationSchema": "https://std.ncvet.gov.in/cred/opencreds/schema/Assessment.json",
+    "obi:validationSchema": "https://std.ncvet.gov.in/cred/opencreds/schema/Assessment.json"
   }, {
     "obi:validatesType": "ocd:CertificateExtension",
-    "obi:validationSchema": "https://std.ncvet.gov.in/cred/opencreds/schema/CertificateExtension.json",
+    "obi:validationSchema": "https://std.ncvet.gov.in/cred/opencreds/schema/CertificateExtension.json"
   }, {
     "obi:validatesType": "ocd:CompositeIdentity",
-    "obi:validationSchema": "https://std.ncvet.gov.in/cred/opencreds/schema/CompositeIdentity.json",
+    "obi:validationSchema": "https://std.ncvet.gov.in/cred/opencreds/schema/CompositeIdentity.json"
   }, {
     "obi:validatesType": "ocd:Duration",
-    "obi:validationSchema": "https://std.ncvet.gov.in/cred/opencreds/schema/Duration.json",
+    "obi:validationSchema": "https://std.ncvet.gov.in/cred/opencreds/schema/Duration.json"
   }, {
     "obi:validatesType": "ocd:SignatoryExtension",
-    "obi:validationSchema": "https://std.ncvet.gov.in/cred/opencreds/schema/SignatoryExtension.json",
+    "obi:validationSchema": "https://std.ncvet.gov.in/cred/opencreds/schema/SignatoryExtension.json"
   }, {
     "obi:validatesType": "ocd:TrainingExtension",
-    "obi:validationSchema": "https://std.ncvet.gov.in/cred/opencreds/schema/TrainingExtension.json",
+    "obi:validationSchema": "https://std.ncvet.gov.in/cred/opencreds/schema/TrainingExtension.json"
   }]
 }
