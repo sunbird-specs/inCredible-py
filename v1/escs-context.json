@@ -27,6 +27,7 @@
     "designation": { "@id": "ocd:designation" },
     "duration": { "@id": "ocd:duration", "@type": "ocd:Duration" },
     "endDate": { "@id": "schema:endDate" },
+    "equivalent": { "@id": "ocd:equivalent" },
     "grade": { "@id": "ocd:grade" },
     "marks": { "@id": "ocd:marks" },
     "maxValue": { "@id": "ocd:maxValue", "@type": "schema:text" },
