@@ -1,8 +1,5 @@
 {
-  "@context": [
-    {
-    "oc": "https://std.ncvet.gov.in/cred/opencreds/v1#"
-    },
+  "@context":[
     "https://w3id.org/openbadges/v2",
     "https://w3id.org/security/v1",
    "https://raw.githubusercontent.com/kochhar/escs/master/v1/escs-context.json"
@@ -10,17 +7,7 @@
   "@id": "urn:uuid:1c0af19b-df85-42f3-9441-8a390b6c1589",
   "@type": ["Assertion", "Extension", "CertificateExtension"],
   "recipient": {
-    "@type": "composite",
-    "components": [{
-      "@type": ["name", "Extension", "AnnotatedExtension"],
-      "annotation": "FATHER",
-      "identity": "<Name of father>"
-    }, {
-      "@type": ["urn", "Extension", "AnnotatedExtension"],
-      "annotation": "MASKED",
-      "identity": "urn:in.gov.uidai.aadhaar:XXXX-XXXXXXXX-2437"
-    }],
-    "name": "<Name of recipient>"
+    "@id": "#/evidence/0/subject"
   },
   "badge": {
     "@id": "https://example.pasdc.org/certs/courses/ASCL3",
@@ -36,6 +23,7 @@
       "@type": ["Profile", "Extension", "SignatoryExtension"],
       "@id": "https://certs.example.gov/o/pasdc/0781ABCDEAC191",
       "name": "Partner & Associate Skills Development Corporation",
+      "image": "https://example.pasdc.org/images/logo.png",
       "publicKey": {
         "@id": "https://example.pasdc.org/keys/1",
         "@type": "CryptographicKey",
@@ -69,8 +57,9 @@
     "@type": ["Extension", "TrainingExtension"],
     "trainer": {
       "@type": "Profile",
-      "@id": "https://traininer.example.edu/about.json",
-      "name": "Partner Training Institute"
+      "@id": "https://trainer.example.edu/about.json",
+      "name": "Partner Training Institute",
+      "image": "https://trainer.example.edu/logo.jpg"
     },
     "duration": {
       "startDate": "2018-07-25",
@@ -82,13 +71,14 @@
     "@type": ["Evidence", "Extension", "AssessedEvidence"],
     "@id": "urn:uuid:02644c88-d2b7-41ef-a78c-6adf7fbdb268",
     "subject": {
+      "@id": "#/evidence/0/subject",
       "@type": "composite",
       "components": [{
         "@type": ["name", "Extension", "AnnotatedExtension"],
         "annotation": "FATHER",
         "identity": "<Name of father>"
       }, {
-        "@type": ["urn", "Extension", "AnnotatedExtension"],
+        "@type": ["@id", "Extension", "AnnotatedExtension"],
         "annotation": "MASKED",
         "identity": "urn:in.gov.uidai.aadhaar:XXXX-XXXXXXXX-2437"
       }],
@@ -96,11 +86,11 @@
     },
     "name": "Course Grade",
     "assessment": {
-      "@type": "oc:grade",
+      "@type": "grade",
       "value": "B+",
       "maxValue": "A+",
       "related": {
-        "@type": ["oc:equivalent", "oc:percentage"],
+        "@type": ["equivalent", "percentage"],
         "value": "72"
       }
     },
@@ -108,6 +98,7 @@
       "@type": ["Profile", "Extension", "SignatoryExtension"],
       "@id": "https://certs.example.gov/o/acmeauto/0781ABCDEAC191",
       "name": "Acme Automotive Assessments Institute",
+      "image": "https://example.assessor.org/cert-logo.png",
       "publicKey": {
         "@id": "https://example.assessor.org/keys/1",
         "@type": "CryptographicKey",
@@ -127,7 +118,7 @@
     "@type": "LinkedDataSignature2015"
   },
   "signatory": {
-    "@type": ["IdentityObject", "urn", "Extension", "SignatoryExtension"],
+    "@type": ["IdentityObject", "@id", "Extension", "SignatoryExtension"],
     "identity": "urn:in.gov.ka-dot.dl:<KA DL #>",
     "name": "<Name of signatory>",
     "image": "https://example.asdc.org/p/ceo/sign-image.jpg",
