@@ -6,7 +6,7 @@
   ],
   "@id": "urn:uuid:1c0af19b-df85-42f3-9441-8a390b6c1589",
   "@type": ["Assertion", "Extension", "CertificateExtension"],
-  "recipient": {
+  "recipient": {  <<<<< 1. Reference to evidence subject
     "@id": "#/evidence/0/subject"
   },
   "badge": {
@@ -19,8 +19,8 @@
       "@type": "Criteria",
       "narrative": "Successfully cleared assessment for role of Automotive Service Technician"
     },
-    "issuer": {
-      "@type": ["Profile", "Extension", "SignatoryExtension"],
+    "awardedBy": { <<<<< 3a. Issuer identified by URL
+      "@type": ["AwardingBody", "Extension", "SignatoryExtension"],
       "@id": "https://certs.example.gov/o/pasdc/0781ABCDEAC191",
       "name": "Partner & Associate Skills Development Corporation",
       "image": "https://example.pasdc.org/images/logo.png",
@@ -28,10 +28,10 @@
         "@id": "https://example.pasdc.org/keys/1",
         "@type": "CryptographicKey",
         "owner": "https://certs.example.gov/o/pasdc/0781ABCDEAC191",
-        "publicKeyPem": "-----BEGIN PUBLIC KEY-----\n... ... ... ... ...\n-----END PUBLIC KEY-----\n"
+        "publicKeyPem": "-----BEGIN PUBLIC KEY-----\n... <<INSERT KEY>> ...\n-----END PUBLIC KEY-----\n"
       }
     },
-    "alignment": [{
+    "alignment": [{ <<<<< 2. Alignment to standards
       "targetName": "Automotive Service Technician - Level 3",
       "targetURL": "https://www.nqr.gov.in/ASC/Q1401",
       "targetDescription": " ... ",
@@ -51,10 +51,26 @@
       "targetCode": "ASC/N0001"
     }]
   },
-  "issuedOn": "2018-10-29T10:21:43.087UTC",
+  "awardedOn": "2018-10-29T10:21:43.087UTC",
   "image": "https://example.pasdc.org/certs/1c0af19b8a390b6c1589.png",
-  "training": {
-    "@type": ["Extension", "TrainingExtension"],
+  "evidence": [{
+    "@id": "urn:uuid:f4e30fc7-fd1f-4afb-9d34-26b92e0078c3",
+    "@type": ["Evidence", "Extension", "TrainingEvidence"],
+    "name": "Training Course",
+    "subject": {  <<<<< 1. Identified by composite identity
+      "@id": "#/evidence/0/subject",
+      "@type": "composite",
+      "name": "<Name of recipient>",
+      "components": [{
+        "@type": ["name", "Extension", "AnnotatedExtension"],
+        "annotation": "FATHER",
+        "identity": "<Name of father>"
+      }, {
+        "@type": ["@id", "Extension", "AnnotatedExtension"],
+        "annotation": "MASKED",
+        "identity": "urn:in.gov.uidai.aadhaar:XXXX-XXXXXXXX-2437"
+      }],
+    },
     "trainer": {
       "@type": "Profile",
       "@id": "https://trainer.example.edu/about.json",
@@ -66,12 +82,12 @@
       "endDate": "2018-10-22"
     },
     "session": "2018 Aug-Oct Batch #3"
-  },
-  "evidence": [{
-    "@type": ["Evidence", "Extension", "AssessedEvidence"],
+  },{
     "@id": "urn:uuid:02644c88-d2b7-41ef-a78c-6adf7fbdb268",
+    "@type": ["Evidence", "Extension", "AssessedEvidence"],
+    "name": "Course Grade",
     "subject": {
-      "@id": "#/evidence/0/subject",
+      "@id": "#/evidence/1/subject",
       "@type": "composite",
       "components": [{
         "@type": ["name", "Extension", "AnnotatedExtension"],
@@ -84,9 +100,8 @@
       }],
       "name": "<Name of recipient>"
     },
-    "name": "Course Grade",
-    "assessment": {
-      "@type": "grade",
+    "assessment": { <<<<<  4. Representing the grade
+      "@type": "grade", <<<<<
       "value": "B+",
       "maxValue": "A+",
       "related": {
@@ -94,7 +109,7 @@
         "value": "72"
       }
     },
-    "assessedBy": {
+    "assessedBy": { <<<<< 3b. Embedded profile of the assessor
       "@type": ["Profile", "Extension", "SignatoryExtension"],
       "@id": "https://certs.example.gov/o/acmeauto/0781ABCDEAC191",
       "name": "Acme Automotive Assessments Institute",
@@ -117,7 +132,7 @@
   "verification": {
     "@type": "LinkedDataSignature2015"
   },
-  "signatory": {
+  "signatory": {  <<<<< 5. Official signatory
     "@type": ["IdentityObject", "@id", "Extension", "SignatoryExtension"],
     "identity": "urn:in.gov.ka-dot.dl:<KA DL #>",
     "name": "<Name of signatory>",

@@ -13,34 +13,38 @@
       "AlignmentObject": "schema:AlignmentObject",
       "AssessedEvidence": "ocd:AssessedEvidence",
       "Assessment": "ocd:Assessment",
+      "AwardingBody": "obi:Issuer",
       "CertificateExtension": "ocd:CertificateExtension",
       "CompositeIdentity": "ocd:CompositeIdentity",
       "Duration": "ocd:Duration",
+      "IdentityComponent": "ocd:IdentityComponent",
       "SignatoryExtension": "ocd:SignatoryExtension",
-      "TrainingExtension": "ocd:TrainingExtension",
+      "TrainingEvidence": "ocd:TrainingEvidence",
 
       "annotation": { "@id": "ocd:annotation" },
       "assessment": { "@id": "ocd:assessment", "@type": "ocd:Assessment" },
       "assessedBy": { "@id": "ocd:assessedBy", "@type": "@id" },
       "assessedOn": { "@id": "ocd:assessedOn", "@type": "xsd:dateTime" },
-      "issuedThrough": { "@id": "schema:issuedThrough" },
+      "awardedBy": { "@id": "obi:issuer" },
+      "awardedOn": { "@id": "obi:issuedOn" },
+      "awardedThrough": { "@id": "schema:issuedThrough" },
       "components": { "@id": "ocd:components", "@type": "IdentityComponent" },
       "composite": { "@id": "ocd:composite" },
       "designation": { "@id": "ocd:designation" },
       "duration": { "@id": "ocd:duration", "@type": "ocd:Duration" },
       "endDate": { "@id": "schema:endDate" },
       "equivalent": { "@id": "ocd:equivalent" },
-      "grade": { "@id": "ocd:grade" },
-      "marks": { "@id": "ocd:marks" },
+      "grade": { "@id": "ocd:GradeAssessment" },
+      "marks": { "@id": "ocd:MarksAssessment" },
       "maxValue": { "@id": "ocd:maxValue", "@type": "schema:text" },
       "minValue": { "@id": "ocd:minValue", "@type": "schema:text" },
       "passValue": { "@id": "ocd:passValue", "@type": "schema:text" },
-      "percentage": { "@id": "ocd:percentage" },
-      "percentile": { "@id": "ocd:percentile" },
+      "percentage": { "@id": "ocd:PercentageAssessment" },
+      "percentile": { "@id": "ocd:PercentileAssessment" },
       "photo": { "@id": "ocd:photo", "@type": "schema:url" },
       "printUri": { "@id": "ocd:printUri", "@type": "schema:url" },
       "publicKey": { "@id": "sec:publicKey" },
-      "rank": { "@id": "ocd:rank" },
+      "rank": { "@id": "ocd:RankAssessment" },
       "recipient": { "@id": "obi:recipient", "@type": "ocd:CompositeIdentity" },
       "session": { "@id": "ocd:session" },
       "signatory": { "@id": "ocd:signatory", "@type": "ocd:SignatoryExtension" },
@@ -50,6 +54,7 @@
       "tag": { "@id": "ocd:tag", "@type": "schema:text" },
       "training": { "@id": "ocd:training", "@type": "ocd:TrainingExtension" },
       "trainer": { "@id": "ocd:trainer", "@type": "Profile" },
+      "url": { "@id": "schema:url" },
       "validFrom": { "@id": "schema:validFrom" },
       "value": { "@id": "ocd:value", "@type": "schema:text" }
     }
@@ -59,7 +64,7 @@
     "obi:validationSchema": "https://std.ncvet.gov.in/cred/opencreds/schema/AssessedEvidence.json"
   }, {
     "obi:validatesType": "ocd:Assessment",
-    "obi:validationSchema": "https://std.ncvet.gov.in/cred/opencreds/schema/AssessedEvidence.json"
+    "obi:validationSchema": "https://std.ncvet.gov.in/cred/opencreds/schema/Assessment.json"
   }, {
     "obi:validatesType": "ocd:CertificateExtension",
     "obi:validationSchema": "https://std.ncvet.gov.in/cred/opencreds/schema/CertificateExtension.json"
@@ -67,13 +72,10 @@
     "obi:validatesType": "ocd:CompositeIdentity",
     "obi:validationSchema": "https://std.ncvet.gov.in/cred/opencreds/schema/CompositeIdentity.json"
   }, {
-    "obi:validatesType": "ocd:Duration",
-    "obi:validationSchema": "https://std.ncvet.gov.in/cred/opencreds/schema/CertificateExtension.json"
-  }, {
     "obi:validatesType": "ocd:SignatoryExtension",
-    "obi:validationSchema": "https://std.ncvet.gov.in/cred/opencreds/schema/CertificateExtension.json"
+    "obi:validationSchema": "https://std.ncvet.gov.in/cred/opencreds/schema/SignatoryExtension.json"
   }, {
-    "obi:validatesType": "ocd:TrainingExtension",
-    "obi:validationSchema": "https://std.ncvet.gov.in/cred/opencreds/schema/CertificateExtension.json"
+    "obi:validatesType": "ocd:TrainingEvidence",
+    "obi:validationSchema": "https://std.ncvet.gov.in/cred/opencreds/schema/TrainingEvidence.json"
   }]
 }
