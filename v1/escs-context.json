@@ -50,6 +50,7 @@
     "session": { "@id": "ocd:session" },
     "signatory": { "@id": "ocd:signatory", "@type": "ocd:SignatoryExtension" },
     "signature": { "@id": "sec:signature" },
+    "signatureValue": { "@id": "sec:SignatureValue" },
     "startDate": { "@id": "schema:startDate" },
     "subject": { "@id": "ocd:subject", "@type": "ocd:CompositeIdentity" },
     "tag": { "@id": "ocd:tag", "@type": "schema:text" },
