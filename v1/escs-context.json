@@ -29,7 +29,7 @@
     "awardedBy": { "@id": "ob:issuer" },
     "awardedOn": { "@id": "ob:issuedOn" },
     "awardedThrough": { "@id": "schema:issuedThrough" },
-    "components": { "@id": "ocd:components", "@type": "IdentityComponent" },
+    "components": { "@id": "ocd:components", "@type": "ocd:IdentityComponent" },
     "composite": { "@id": "ocd:composite" },
     "designation": { "@id": "ocd:designation" },
     "duration": { "@id": "ocd:duration", "@type": "ocd:Duration" },
