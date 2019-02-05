@@ -19,6 +19,7 @@
     "Duration": "ocd:Duration",
     "IdentityComponent": "ocd:IdentityComponent",
     "LinkedDataSignature2015": "sec:LinkedDataSignature2015",
+    "RsaSignature2018": "sec:RsaSignature2018",
     "SignatoryExtension": "ocd:SignatoryExtension",
     "TrainingEvidence": "ocd:TrainingEvidence",
 
