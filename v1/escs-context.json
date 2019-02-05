@@ -18,7 +18,7 @@
     "Credential": "ob:Assertion",
     "Duration": "ocd:Duration",
     "IdentityComponent": "ocd:IdentityComponent",
-    "LinkedDataSignatures2015": "sec:LinkedDataSignatures2015",
+    "LinkedDataSignature2015": "sec:LinkedDataSignature2015",
     "SignatoryExtension": "ocd:SignatoryExtension",
     "TrainingEvidence": "ocd:TrainingEvidence",
 
