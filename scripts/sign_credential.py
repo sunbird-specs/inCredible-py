@@ -1,10 +1,12 @@
-import base64
+import argparse
 import copy
 from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.hazmat.primitives import serialization as s11n
+from escs import credential as cred
 import functools as ft
 import json
 from pyld import jsonld
@@ -20,69 +22,30 @@ def create_key_pair(key_size=2048, backend_factory=default_backend):
   return private_key, private_key.public_key()
 
 
-def get_context(opencreds_url=None):
-  if opencreds_url is None:
-    opencreds_url = "https://std.ncvet.gov.in/cred/opencreds#"
+def load_key_pair(private_key_filename, public_key_filename=None, password=None, backend_factory=default_backend):
+  """Given a private key file and a public key file reads from file and returns
+  the pair.
 
-  return {
-    "ocd": opencreds_url,
-    "obi": "https://w3id.org/openbadges#",
-    "schema": "http://schema.org/",
-    "wid": "https://w3id.org/identity/v1",
-  }
+  Parameters:
+    private_key_filename: the filename containing the private key
+    public_key_filename: the filename containing the public key, if None, will
+        default to the private_key_filename with the added extension '.pub'
+    password: the password to the private key, None if there is no password.
+    backend_factory: function which returns a backend
+  """
+  if not private_key_filename: raise ValueError('private_key_filename cannot be empty.')
+  if public_key_filename is None:
+    public_key_filename = private_key_filename + '.pub'
 
+  with open(private_key_filename, 'rb') as privfile:
+    pemlines = privfile.read()
+  private_key = s11n.load_pem_private_key(pemlines, password, default_backend())
 
-def create_credential():
-  doc = {
-    "@id": "https://www.example.com/certs/2018/9900001234.json",
-    "@type": "obi:Assertion",
-    "obi:recipient": {
-      "@type": "email",
-      "obi:hashed": "true",
-      "obi:identity": "sha256$bdeffdadbd28657adcead3825fdb23875dab8e928ad8d68f6",
-      "obi:salt": "bluewater",
-      "obi:name": "Example Recipient Name",
-    },
-    "obi:badge": {
-      "@id": "urn:uuid:ec58b28e-a6ab-49c2-a24d-ebefa02476cd",
-      "@type": "obi:BadgeClass",
-      "obi:name": "Certificate of Participation",
-      "obi:description": "Content Marketing Course",
-      "obi:issuer": {
-        "@type": "obi:Profile",
-        "@id": "tag:example.com,2009-11-28:#company.json",
-        "obi:name": "Example Training Corp",
-        "obi:image": "https://www.example.com/images/logo.png",
-        "obi:email": "certificates@example.com",
-      },
-    },
-    "obi:issuedOn": "2018-08-11T09:27:30.613UTC",
-    "obi:narrative": "Issued for participating in Content Marketing Course in association with Partner Marketing Solutions",
-    "obi:verification": {
-      "@type": "ocd:LinkedDataSignatures"
-    },
-    "ocd:signatory": [{
-      "@type": ["ocd:CompositeIdentity", "obi:Extension", "ocd:SignatoryExtension"],
-      "ocd:components": [{
-        "@type": ["obi:IdentityObject", "ocd:name"],
-        "ocd:annotation": "FATHER",
-        "obi:identity": "Example Father Name"
-      }, {
-        "@type": ["obi:IdentityObject", "ocd:photo"],
-        "obi:identity": "data:image/jpeg;base64,<base64 jpg image>"
-      }],
-      "obi:name": "Example Signatory Name",
-      "obi:image": "https://example.com/p/ceo/sign-image.jpg",
-      "ocd:designation": "CEO, Example Training Corp",
-    }, {
-      "@type": ["ocd:IdentityObject", "oc:urn", "ob:Extension", "oc:SignatoryExtension"],
-      "obi:name": "<Name of signatory>",
-      "obi:image": "https://example2.com/edb/l:dir/mkt/sign-image.jpg",
-      "obi:identity": "urn:in.gov.eci.voter:<Voter #>",
-      "ocd:designation": "Director, Partner Marketing Solutions",
-    }]
-  }
-  return jsonld.compact(doc, get_context())
+  with open(public_key_filename, 'rb') as pubfile:
+    pemlines = pubfile.read()
+  public_key = s11n.load_ssh_public_key(pemlines, default_backend())
+
+  return private_key, public_key
 
 
 def normalize_RsaSignature2018(credential):
@@ -137,48 +100,52 @@ def verify_RsaSignature2018(credential, public_key, signature):
     return False
 
 
-def create_ld_signature(signature):
-  """
-  Parameters
-    signautre: signature bytes object
-  """
-  b64signature = base64.urlsafe_b64encode(signature)
-  return {
-    "@type": "RsaSignature2018",
-    "wid:creator": "https://example.com/keys/1/sampleKey",
-    "wid:created": "2019-01-22T12:38:44Z",
-    "wid:signatureValue": b64signature.decode('utf-8')
-  }
-
-
-def bytes_from_ld_signature(ld_signature):
-  """
-  Parameters:
-    ld_signatue: LinkedDataSignatures object containing a signatureValue
-                 key representing a base64 encoded signature of the
-                 document
-  """
-  b64signature = ld_signature['wid:signatureValue'].encode('utf-8')
-  return base64.urlsafe_b64decode(b64signature)
-
-
-if __name__ == '__main__':
-  credential = create_credential()
-  private_key, public_key = create_key_pair()
+def sign_credential_in_file(filename, private_key, public_key, public_key_url):
+  credential = cred.create_credential(filename)
+  cred.set_issuer_public_key(credential, issuer_public_key=public_key,
+                             issuer_public_key_url=public_key_url)
 
   signature = create_RsaSignature2018(credential, private_key)
   verified = verify_RsaSignature2018(credential, public_key, signature)
   assert verified == True
-  print('Signature verified from bytes', file=sys.stderr)
+  print('Signature verified directly from signature bytes', file=sys.stderr)
 
-  ld_signature = create_ld_signature(signature)
-  credential['ocd:signature'] = ld_signature
-  print(json.dumps(credential, indent=2))
+  signed_credential = copy.deepcopy(credential)
+  ld_signature = cred.create_ld_signature(signature, public_key_url)
+  signed_credential['ocd:signature'] = ld_signature
+  print(json.dumps(signed_credential, indent=2))
+
+def verify_credential_in_file(filename):
+  with open(filename, 'r') as f:
+    signed_credential = json.load(f)
 
   # Removing the signature element from the credential for comparison
-  base_credential = copy.deepcopy(credential)
-  signature_bytes = bytes_from_ld_signature(base_credential.pop('ocd:signature'))
-  verified_from_doc = verify_RsaSignature2018(base_credential, public_key, signature_bytes)
-  assert verified_from_doc == True
-  print('Signature verified from doc', file=sys.stderr)
+  unsigned_credential = copy.deepcopy(signed_credential)
+  ld_signature = unsigned_credential.pop('ocd:signature')
 
+  signature_bytes = cred.signature_bytes_from_ld_signature(ld_signature)
+  public_key_from_doc = cred.rsa_public_key_from_issuer(cred.issuer_from_credential(unsigned_credential))
+  verified_from_doc = verify_RsaSignature2018(unsigned_credential, public_key_from_doc, signature_bytes)
+  assert verified_from_doc == True
+  print('Signature verified after reading from credential', file=sys.stderr)
+
+
+if __name__ == '__main__':
+  parser = argparse.ArgumentParser()
+  parser.add_argument('file', help='File to either sign or verify')
+  parser.add_argument('-s', '--sign', action='store_true', dest='sign',
+                      help='Toggle switch to enable signing. Requires --key option')
+  parser.add_argument('-k', '--key', action='store', dest='keyfile', default=None,
+                      help='Filepath to the private key to sign document with. '
+                      'Required with --sign option')
+  parser.add_argument('-v', '--verify', action='store_false', dest='sign',
+                      help='Toggle switch to enable verification')
+
+  args = parser.parse_args()
+
+  if args.sign:
+    private_key, public_key = load_key_pair(args.keyfile)
+    public_key_url = 'https://example.com/keys/exampleKey'
+    sign_credential_in_file(args.file, private_key, public_key, public_key_url)
+  else:
+    verify_credential_in_file(args.file)
