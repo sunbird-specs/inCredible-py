@@ -2,11 +2,11 @@
   "@context":[
     "https://w3id.org/openbadges/v2",
     "https://w3id.org/security/v1",
-   "https://raw.githubusercontent.com/kochhar/escs/master/v1/escs-context.json"
+    "https://raw.githubusercontent.com/kochhar/escs/master/v1/escs-context.json"
   ],
   "@id": "urn:uuid:1c0af19b-df85-42f3-9441-8a390b6c1589",
   "@type": ["Assertion", "Extension", "CertificateExtension"],
-  "recipient": {  <<<<< 1. Reference to evidence subject
+  "recipient": {
     "@id": "#/evidence/0/subject"
   },
   "badge": {
@@ -19,7 +19,7 @@
       "@type": "Criteria",
       "narrative": "Successfully cleared assessment for role of Automotive Service Technician"
     },
-    "awardedBy": { <<<<< 3a. Issuer identified by URL
+    "awardedBy": {
       "@type": ["AwardingBody", "Extension", "SignatoryExtension"],
       "@id": "https://certs.example.gov/o/pasdc/0781ABCDEAC191",
       "name": "Partner & Associate Skills Development Corporation",
@@ -31,7 +31,7 @@
         "publicKeyPem": "-----BEGIN PUBLIC KEY-----\n... <<INSERT KEY>> ...\n-----END PUBLIC KEY-----\n"
       }
     },
-    "alignment": [{ <<<<< 2. Alignment to standards
+    "alignment": [{
       "targetName": "Automotive Service Technician - Level 3",
       "targetURL": "https://www.nqr.gov.in/ASC/Q1401",
       "targetDescription": " ... ",
@@ -57,7 +57,7 @@
     "@id": "urn:uuid:f4e30fc7-fd1f-4afb-9d34-26b92e0078c3",
     "@type": ["Evidence", "Extension", "TrainingEvidence"],
     "name": "Training Course",
-    "subject": {  <<<<< 1. Identified by composite identity
+    "subject": {
       "@id": "#/evidence/0/subject",
       "@type": "composite",
       "name": "<Name of recipient>",
@@ -100,8 +100,8 @@
       }],
       "name": "<Name of recipient>"
     },
-    "assessment": { <<<<<  4. Representing the grade
-      "@type": "grade", <<<<<
+    "assessment": {
+      "@type": "grade",
       "value": "B+",
       "maxValue": "A+",
       "related": {
@@ -109,7 +109,7 @@
         "value": "72"
       }
     },
-    "assessedBy": { <<<<< 3b. Embedded profile of the assessor
+    "assessedBy": {
       "@type": ["Profile", "Extension", "SignatoryExtension"],
       "@id": "https://certs.example.gov/o/acmeauto/0781ABCDEAC191",
       "name": "Acme Automotive Assessments Institute",
@@ -132,7 +132,7 @@
   "verification": {
     "@type": "LinkedDataSignature2015"
   },
-  "signatory": {  <<<<< 5. Official signatory
+  "signatory": {
     "@type": ["IdentityObject", "@id", "Extension", "SignatoryExtension"],
     "identity": "urn:in.gov.ka-dot.dl:<KA DL #>",
     "name": "<Name of signatory>",
