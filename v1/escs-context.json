@@ -55,7 +55,7 @@
     "subject": { "@id": "ocd:subject", "@type": "ocd:CompositeIdentity" },
     "tag": { "@id": "ocd:tag", "@type": "schema:text" },
     "training": { "@id": "ocd:training", "@type": "ocd:TrainingExtension" },
-    "trainer": { "@id": "ocd:trainer", "@type": "Profile" },
+    "trainer": { "@id": "ocd:trainer", "@type": "ob:Profile" },
     "url": { "@id": "schema:url" },
     "validFrom": { "@id": "schema:validFrom" },
     "value": { "@id": "ocd:value", "@type": "schema:text" }
