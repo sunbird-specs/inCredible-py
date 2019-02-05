@@ -9,6 +9,7 @@
     "xsd": "http://www.w3.org/2001/XMLSchema#",
 
     "AlignmentObject": "schema:AlignmentObject",
+    "AnnotatedExtension": "ocd:AnnotatedExtension",
     "AssessedEvidence": "ocd:AssessedEvidence",
     "Assessment": "ocd:Assessment",
     "AwardingBody": "ob:Issuer",
@@ -17,6 +18,7 @@
     "Credential": "ob:Assertion",
     "Duration": "ocd:Duration",
     "IdentityComponent": "ocd:IdentityComponent",
+    "LinkedDataSignatures2015": "sec:LinkedDataSignatures2015",
     "SignatoryExtension": "ocd:SignatoryExtension",
     "TrainingEvidence": "ocd:TrainingEvidence",
 
