@@ -7,7 +7,6 @@ from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives import serialization as s11n
 from escs import credential as cred
-import functools as ft
 import json
 from pyld import jsonld
 import sys
@@ -46,6 +45,36 @@ def load_key_pair(private_key_filename, public_key_filename=None, password=None,
   public_key = s11n.load_ssh_public_key(pemlines, default_backend())
 
   return private_key, public_key
+
+
+def save_key_pair(private_key, private_key_filename, password=None, public_key_filename=None):
+  """
+  Saves an RSA private key and its public key component to a file optionally
+  encrypting the private key with a password.
+
+  Parameters:
+    private_key: an RSA private key
+    private_key_filename: the file where the private key will be output
+    password: the bytes for the password, None if not encypted
+    public_key_filename: alternate filename for the public key. If omitted
+        will use the private_key_filename with '.pub' as the extension
+  """
+  if not private_key_filename: raise ValueError('private_key_filename cannot be empty.')
+  if public_key_filename is None:
+    public_key_filename = private_key_filename + '.pub'
+  public_key = private_key.public_key()
+
+  with open(private_key_filename, 'wb') as privfile:
+    alg = s11n.NoEncryption() if password is None else s11n.BestAvailableEncryption(password)
+    private_bytes = private_key.private_bytes(encoding=s11n.Encoding.PEM,
+                                             format=s11n.PrivateFormat.PKCS8,
+                                             encryption_algorithm=alg)
+    privfile.write(private_bytes)
+
+  with open(public_key_filename, 'wb') as pubfile:
+    public_bytes = public_key.public_bytes(encoding=s11n.Encoding.OpenSSH,
+                                           format=s11n.PrivateFormat.OpenSSH)
+    pubfile.write(public_bytes)
 
 
 def normalize_RsaSignature2018(credential):
@@ -114,6 +143,7 @@ def sign_credential_in_file(filename, private_key, public_key, public_key_url):
   ld_signature = cred.create_ld_signature(signature, public_key_url)
   signed_credential['ocd:signature'] = ld_signature
   print(json.dumps(signed_credential, indent=2))
+
 
 def verify_credential_in_file(filename):
   with open(filename, 'r') as f:
