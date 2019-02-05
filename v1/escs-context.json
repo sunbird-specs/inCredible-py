@@ -3,7 +3,7 @@
     "id": "@id",
     "type": "@type",
     "ocd": "http://msde.gov.in/dgt/cred/opencreds/v1#",
-    "ob": "https://w3id.org/openbadges/v2",
+    "ob": "https://w3id.org/openbadges/v2#",
     "schema": "http://schema.org/",
     "sec": "https://w3id.org/security/v1#",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
