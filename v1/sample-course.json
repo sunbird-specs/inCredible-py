@@ -1,149 +1,136 @@
 {
-  "@context":[
-    "https://w3id.org/openbadges/v2",
-    "https://w3id.org/security/v1",
-    "https://raw.githubusercontent.com/kochhar/escs/master/v1/escs-context.json"
-  ],
+  "@context": {
+    "ocd": "https://msde.gov.in/dgt/opencreds/v1#",
+    "ob": "https://w3id.org/openbadges/v2#"
+  },
   "@id": "urn:uuid:1c0af19b-df85-42f3-9441-8a390b6c1589",
-  "@type": ["Assertion", "Extension", "CertificateExtension"],
-  "recipient": {
+  "@type": ["ocd:Credential", "ob:Extension", "ocd:CertificateExtension"],
+  "ob:recipient": {
     "@id": "#/evidence/0/subject"
   },
-  "badge": {
+  "ob:badge": {
     "@id": "https://example.pasdc.org/certs/courses/ASCL3",
     "@type": "BadgeClass",
-    "name": "Automotive Service Technician Course",
-    "description": " ... ",
-    "image": "data:image/png;base64,<base64-encoded-png-data>",
-    "criteria": {
-      "@type": "Criteria",
+    "schema:name": "Automotive Service Technician Course",
+    "schema:description": " ... ",
+    "schema:image": "data:image/png;base64,<base64-encoded-png-data>",
+    "ob:criteria": {
+      "@type": "ob:Criteria",
       "narrative": "Successfully cleared assessment for role of Automotive Service Technician"
     },
-    "awardedBy": {
-      "@type": ["AwardingBody", "Extension", "SignatoryExtension"],
+    "ocd:awardedBy": {
+      "@type": ["ocd:AwardingBody", "ob:Extension", "ocd:SignatoryExtension"],
       "@id": "https://certs.example.gov/o/pasdc/0781ABCDEAC191",
-      "name": "Partner & Associate Skills Development Corporation",
-      "image": "https://example.pasdc.org/images/logo.png",
-      "publicKey": {
-        "@id": "https://example.pasdc.org/keys/1",
-        "@type": "CryptographicKey",
-        "owner": "https://certs.example.gov/o/pasdc/0781ABCDEAC191",
-        "publicKeyPem": "-----BEGIN PUBLIC KEY-----\n... <<INSERT KEY>> ...\n-----END PUBLIC KEY-----\n"
-      }
+      "schema:name": "Partner & Associate Skills Development Corporation",
+      "schema:image": "https://example.pasdc.org/images/logo.png"
     },
-    "alignment": [{
-      "targetName": "Automotive Service Technician - Level 3",
-      "targetURL": "https://www.nqr.gov.in/ASC/Q1401",
-      "targetDescription": " ... ",
-      "targetFramework": "NSQF",
-      "targetCode": "ASC/Q1401"
+    "schema:alignment": [{
+      "schema:targetName": "Automotive Service Technician - Level 3",
+      "schema:targetURL": "https://www.nqr.gov.in/ASC/Q1401",
+      "schema:targetDescription": " ... ",
+      "schema:targetFramework": "NSQF",
+      "schema:targetCode": "ASC/Q1401"
     }, {
-      "targetName": " Assist in vehicle service and maintenance",
-      "targetURL": "https://www.nqr.gov.in/ASC/N1401",
-      "targetDescription": " ... ",
-      "targetFramework": "NOS",
-      "targetCode": "ASC/N1401"
+      "schema:targetName": " Assist in vehicle service and maintenance",
+      "schema:targetURL": "https://www.nqr.gov.in/ASC/N1401",
+      "schema:targetDescription": " ... ",
+      "schema:targetFramework": "NOS",
+      "schema:targetCode": "ASC/N1401"
     }, {
-      "targetName": "Plan and organise work to meet expected outcomes",
-      "targetURL": "https://www.nqr.gov.in/ASC/N0001",
-      "targetDescription": " ... ",
-      "targetFramework": "NOS",
-      "targetCode": "ASC/N0001"
+      "schema:targetName": "Plan and organise work to meet expected outcomes",
+      "schema:targetURL": "https://www.nqr.gov.in/ASC/N0001",
+      "schema:targetDescription": " ... ",
+      "schema:targetFramework": "NOS",
+      "schema:targetCode": "ASC/N0001"
     }]
   },
-  "awardedOn": "2018-10-29T10:21:43.087UTC",
-  "image": "https://example.pasdc.org/certs/1c0af19b8a390b6c1589.png",
-  "evidence": [{
+  "ocd:awardedOn": "2018-10-29T10:21:43.087UTC",
+  "schema:image": "https://example.pasdc.org/certs/1c0af19b8a390b6c1589.png",
+  "ob:evidence": [{
     "@id": "urn:uuid:f4e30fc7-fd1f-4afb-9d34-26b92e0078c3",
-    "@type": ["Evidence", "Extension", "TrainingEvidence"],
-    "name": "Training Course",
-    "subject": {
+    "@type": ["ob:Evidence", "ob:Extension", "ocd:TrainingEvidence"],
+    "schema:name": "Training Course",
+    "ocd:subject": {
       "@id": "#/evidence/0/subject",
-      "@type": "composite",
-      "name": "<Name of recipient>",
-      "components": [{
-        "@type": ["name", "Extension", "AnnotatedExtension"],
-        "annotation": "FATHER",
-        "identity": "<Name of father>"
+      "@type": "ocd:composite",
+      "schema:name": "<Name of recipient>",
+      "ocd:components": [{
+        "@type": ["schema:name", "ob:Extension", "ocd:AnnotatedExtension"],
+        "ocd:annotation": "FATHER",
+        "ob:identity": "<Name of father>"
       }, {
-        "@type": ["@id", "Extension", "AnnotatedExtension"],
-        "annotation": "MASKED",
-        "identity": "urn:in.gov.uidai.aadhaar:XXXX-XXXXXXXX-2437"
-      }],
+        "@type": ["@id", "ob:Extension", "ocd:AnnotatedExtension"],
+        "ocd:annotation": "MASKED",
+        "ob:identity": "urn:in.gov.uidai.aadhaar:XXXX-XXXXXXXX-2437"
+      }]
     },
-    "trainer": {
-      "@type": "Profile",
+    "ocd:trainer": {
+      "@type": "ob:Profile",
       "@id": "https://trainer.example.edu/about.json",
-      "name": "Partner Training Institute",
-      "image": "https://trainer.example.edu/logo.jpg"
+      "schema:name": "Partner Training Institute",
+      "schema:image": "https://trainer.example.edu/logo.jpg"
     },
-    "duration": {
-      "startDate": "2018-07-25",
-      "endDate": "2018-10-22"
+    "ocd:duration": {
+      "schema:startDate": "2018-07-25",
+      "schema:endDate": "2018-10-22"
     },
-    "session": "2018 Aug-Oct Batch #3"
+    "ocd:session": "2018 Aug-Oct Batch #3"
   },{
     "@id": "urn:uuid:02644c88-d2b7-41ef-a78c-6adf7fbdb268",
-    "@type": ["Evidence", "Extension", "AssessedEvidence"],
-    "name": "Course Grade",
-    "subject": {
+    "@type": ["ob:Evidence", "ocd:Extension", "ocd:AssessedEvidence"],
+    "schema:name": "Course Grade",
+    "ocd:subject": {
       "@id": "#/evidence/1/subject",
-      "@type": "composite",
-      "components": [{
-        "@type": ["name", "Extension", "AnnotatedExtension"],
-        "annotation": "FATHER",
-        "identity": "<Name of father>"
+      "@type": "ocd:composite",
+      "ocd:components": [{
+        "@type": ["schema:name", "ob:Extension", "ocd:AnnotatedExtension"],
+        "ocd:annotation": "FATHER",
+        "ob:identity": "<Name of father>"
       }, {
-        "@type": ["@id", "Extension", "AnnotatedExtension"],
-        "annotation": "MASKED",
-        "identity": "urn:in.gov.uidai.aadhaar:XXXX-XXXXXXXX-2437"
+        "@type": ["@id", "ob:Extension", "ocd:AnnotatedExtension"],
+        "ocd:annotation": "MASKED",
+        "ob:identity": "urn:in.gov.uidai.aadhaar:XXXX-XXXXXXXX-2437"
       }],
-      "name": "<Name of recipient>"
+      "schema:name": "<Name of recipient>"
     },
-    "assessment": {
+    "ocd:assessment": {
       "@type": "grade",
-      "value": "B+",
-      "maxValue": "A+",
-      "related": {
-        "@type": ["equivalent", "percentage"],
-        "value": "72"
+      "ocd:value": "B+",
+      "ocd:maxValue": "A+",
+      "ob:related": {
+        "@type": ["ocd:equivalent", "ocd:percentage"],
+        "ocd:value": "72"
       }
     },
-    "assessedBy": {
-      "@type": ["Profile", "Extension", "SignatoryExtension"],
+    "ocd:assessedBy": {
+      "@type": ["ob:Profile", "ob:Extension", "ocd:SignatoryExtension"],
       "@id": "https://certs.example.gov/o/acmeauto/0781ABCDEAC191",
-      "name": "Acme Automotive Assessments Institute",
-      "image": "https://example.assessor.org/cert-logo.png",
-      "publicKey": {
+      "schema:name": "Acme Automotive Assessments Institute",
+      "schema:image": "https://example.assessor.org/cert-logo.png",
+      "ocd:publicKey": {
         "@id": "https://example.assessor.org/keys/1",
-        "@type": "CryptographicKey",
-        "owner": "https://certs.example.gov/o/acmeauto/0781ABCDEAC191",
-        "publicKeyPem": "-----BEGIN PUBLIC KEY-----\n... ... ... ... ...\n-----END PUBLIC KEY-----\n"
+        "@type": "ob:CryptographicKey",
+        "sec:owner": "https://certs.example.gov/o/acmeauto/0781ABCDEAC191",
+        "sec:publicKeyPem": "-----BEGIN PUBLIC KEY-----\n... ... ... ... ...\n-----END PUBLIC KEY-----\n"
       }
     },
-    "assessedOn": "2018-10-19T6:30:00Z",
-    "signature": {
-      "@type": "LinkedDataSignature2015",
-      "creator": "https://example.assessor.org/keys/1",
-      "created": "2018-10-23T20:21:34Z",
-      "signatureValue": "LTQzNTVVmMm3ODM3QzNmtlYzIZD34GIyZGk="
+    "ocd:assessedOn": "2018-10-19T6:30:00Z",
+    "ocd:signature": {
+      "@type": "ocd:RsaSignature2018",
+      "ob:creator": "https://example.assessor.org/keys/1",
+      "ob:created": "2018-10-23T20:21:34Z",
+      "ocd:signatureValue": "DuMMy-LTQzNTVVmMm3ODM3QzNmtlYzIZD34GIyZGk="
     }
   }],
-  "verification": {
-    "@type": "LinkedDataSignature2015"
+  "ob:verification": {
+    "@type": "ocd:LinkedDataSignature2015"
   },
-  "signatory": {
-    "@type": ["IdentityObject", "@id", "Extension", "SignatoryExtension"],
-    "identity": "urn:in.gov.ka-dot.dl:<KA DL #>",
-    "name": "<Name of signatory>",
-    "image": "https://example.asdc.org/p/ceo/sign-image.jpg",
-    "designation": "CEO, Automotive Skills Development Council"
+  "ocd:signatory": {
+    "@type": ["ob:IdentityObject", "@id", "ob:Extension", "ocd:SignatoryExtension"],
+    "ob:identity": "urn:in.gov.ka-dot.dl:<KA DL #>",
+    "schema:name": "<Name of signatory>",
+    "schema:image": "https://example.asdc.org/p/ceo/sign-image.jpg",
+    "ocd:designation": "CEO, Automotive Skills Development Council"
   },
-  "printUri": "data:image/jpeg;base64,<jpg-data>",
-  "signature": [{
-    "@type": "LinkedDataSignature2015",
-    "created": "2018-10-23T10:21:40.817UTC",
-    "creator": "https://example.pasdc.org/keys/1",
-    "signatureValue": "OGQzNGVkMzVmMmQ3ODIyYzI4ZDY3NjI4NTIyZTk="
-  }]
+  "ocd:printUri": "data:image/jpeg;base64,<jpg-data>"
 }
