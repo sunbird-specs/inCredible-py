@@ -37,9 +37,9 @@
     "equivalent": { "@id": "ocd:equivalent" },
     "grade": { "@id": "ocd:GradeAssessment" },
     "marks": { "@id": "ocd:MarksAssessment" },
-    "maxValue": { "@id": "ocd:maxValue", "@type": "schema:text" },
-    "minValue": { "@id": "ocd:minValue", "@type": "schema:text" },
-    "passValue": { "@id": "ocd:passValue", "@type": "schema:text" },
+    "maxValue": { "@id": "ocd:maxValue" },
+    "minValue": { "@id": "ocd:minValue" },
+    "passValue": { "@id": "ocd:passValue" },
     "percentage": { "@id": "ocd:PercentageAssessment" },
     "percentile": { "@id": "ocd:PercentileAssessment" },
     "photo": { "@id": "ocd:photo", "@type": "schema:url" },
@@ -53,12 +53,12 @@
     "signatureValue": { "@id": "sec:SignatureValue" },
     "startDate": { "@id": "schema:startDate" },
     "subject": { "@id": "ocd:subject", "@type": "ocd:CompositeIdentity" },
-    "tag": { "@id": "ocd:tag", "@type": "schema:text" },
+    "tag": { "@id": "ocd:tag" },
     "training": { "@id": "ocd:training", "@type": "ocd:TrainingExtension" },
     "trainer": { "@id": "ocd:trainer", "@type": "ob:Profile" },
     "url": { "@id": "schema:url" },
     "validFrom": { "@id": "schema:validFrom" },
-    "value": { "@id": "ocd:value", "@type": "schema:text" }
+    "value": { "@id": "ocd:value" }
   },
   "ob:validation": [{
     "ob:validatesType": "ocd:AssessedEvidence",
