@@ -4,7 +4,7 @@
     {
       "id": "@id",
       "type": "@type",
-      "ocd": "http://std.ncvet.gov.in/cred/opencreds/v1#",
+      "ocd": "http://msde.gov.in/dgt/cred/opencreds/v1#",
       "obi": "https://w3id.org/openbadges#",
       "schema": "http://schema.org/",
       "sec": "https://w3id.org/security/v1#",
