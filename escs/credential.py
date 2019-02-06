@@ -11,6 +11,8 @@ from pyld import jsonld
 
 # Credentials
 def create_credential(filename):
+  """Reads a credential document from filename and returns the compact
+  JSON-LD representation of the credential."""
   with open(filename, 'r') as f:
     doc = json.load(f)
 
@@ -22,6 +24,7 @@ def create_credential(filename):
 
 ## Issuer
 def issuer_from_credential(credential):
+  """Extracts the issuer from a credential."""
   return credential['ob:badge']['ocd:awardedBy']
 
 
@@ -71,10 +74,11 @@ def signature_bytes_from_ld_signature(ld_signature):
   return base64.urlsafe_b64decode(b64signature)
 
 
-def rsa_public_key_from_issuer(issuer):
-  """Retrieves the public key from the credential."""
-  public_key_pem = issuer['ocd:publicKey']['sec:publicKeyPem']
-  public_key = s11n.load_pem_public_key(public_key_pem.encode('utf-8'), default_backend())
-  return public_key
+def public_key_from_issuer(issuer):
+  """Retrieves the public key from the credential and also converts to rsa_public_key. """
+  public_key = issuer['ocd:publicKey']
+  public_key_pem = public_key['sec:publicKeyPem']
+  rsa_public_key = s11n.load_pem_public_key(public_key_pem.encode('utf-8'), default_backend())
+  return public_key, rsa_public_key
 
 

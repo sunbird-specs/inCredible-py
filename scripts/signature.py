@@ -129,53 +129,67 @@ def verify_RsaSignature2018(credential, public_key, signature):
     return False
 
 
-def sign_credential_in_file(filename, private_key, public_key, public_key_url):
+def sign_credential_in_file(filename, keyfile, public_key_url):
   credential = cred.create_credential(filename)
+  private_key, public_key = load_key_pair(keyfile)
   cred.set_issuer_public_key(credential, issuer_public_key=public_key,
                              issuer_public_key_url=public_key_url)
 
   signature = create_RsaSignature2018(credential, private_key)
   verified = verify_RsaSignature2018(credential, public_key, signature)
   assert verified == True
-  print('Signature verified directly from signature bytes', file=sys.stderr)
+  print('Credential signature bytes verified using public key in %s.pub' % (keyfile,),
+        file=sys.stderr)
 
   signed_credential = copy.deepcopy(credential)
   ld_signature = cred.create_ld_signature(signature, public_key_url)
   signed_credential['ocd:signature'] = ld_signature
   print(json.dumps(signed_credential, indent=2))
+  print('Credential created', file=sys.stderr)
 
 
 def verify_credential_in_file(filename):
   with open(filename, 'r') as f:
     signed_credential = json.load(f)
 
-  # Removing the signature element from the credential for comparison
+
   unsigned_credential = copy.deepcopy(signed_credential)
+  # Removing the signature element from the credential for comparison
   ld_signature = unsigned_credential.pop('ocd:signature')
 
   signature_bytes = cred.signature_bytes_from_ld_signature(ld_signature)
-  public_key_from_doc = cred.rsa_public_key_from_issuer(cred.issuer_from_credential(unsigned_credential))
-  verified_from_doc = verify_RsaSignature2018(unsigned_credential, public_key_from_doc, signature_bytes)
+  sec_key, rsa_public_key = cred.public_key_from_issuer(cred.issuer_from_credential(unsigned_credential))
+  verified_from_doc = verify_RsaSignature2018(unsigned_credential, rsa_public_key, signature_bytes)
   assert verified_from_doc == True
-  print('Signature verified after reading from credential', file=sys.stderr)
+
+  print('Credential signature in %(filename)r verified using public key: %(key_id)s' %
+        {
+          'filename': filename,
+          'key_id': sec_key['@id']
+        }, file=sys.stderr)
 
 
 if __name__ == '__main__':
-  parser = argparse.ArgumentParser()
+  parser = argparse.ArgumentParser(description="Manipulate JSON-LD signatures -- sign or verify")
   parser.add_argument('file', help='File to either sign or verify')
-  parser.add_argument('-s', '--sign', action='store_true', dest='sign',
-                      help='Toggle switch to enable signing. Requires --key option')
+  mode = parser.add_mutually_exclusive_group()
+  mode.add_argument('-s', '--sign', action='store_true',
+                      help='Run in signing mode. Requires --key option')
+  mode.add_argument('-v', '--verify', action='store_true',
+                      help='Run in verification mode')
   parser.add_argument('-k', '--key', action='store', dest='keyfile', default=None,
                       help='Filepath to the private key to sign document with. '
+                      'Public key should found at <KEYFILE>.pub.'
                       'Required with --sign option')
-  parser.add_argument('-v', '--verify', action='store_false', dest='sign',
-                      help='Toggle switch to enable verification')
 
   args = parser.parse_args()
-
   if args.sign:
-    private_key, public_key = load_key_pair(args.keyfile)
+    if not args.keyfile:
+      parser.error('Signing mode requires keyfile(s) containing private key')
+
     public_key_url = 'https://example.com/keys/exampleKey'
-    sign_credential_in_file(args.file, private_key, public_key, public_key_url)
-  else:
+    sign_credential_in_file(args.file, args.keyfile, public_key_url)
+  elif args.verify:
     verify_credential_in_file(args.file)
+  else:
+    parser.error('Must choose one of sign (--sign) or verify (--verify) modes')
