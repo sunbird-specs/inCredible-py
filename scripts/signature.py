@@ -1,16 +1,10 @@
 import argparse
-import copy
-from escs import credential as cred
-from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.primitives.asymmetric import padding
-from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives import serialization as s11n
-import json
-from pyld import jsonld
+from escs import credential as cred
 from escs import signatures
 from escs import suites
+import json
 import sys
 
 
