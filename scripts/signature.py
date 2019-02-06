@@ -6,19 +6,11 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives import serialization as s11n
+import datetime
 from escs import credential as cred
 import json
 from pyld import jsonld
 import sys
-
-
-def create_key_pair(key_size=2048, backend_factory=default_backend):
-  private_key = rsa.generate_private_key(
-    public_exponent=65537,
-    key_size=key_size,
-    backend=backend_factory())
-
-  return private_key, private_key.public_key()
 
 
 def load_key_pair(private_key_filename, public_key_filename=None, password=None, backend_factory=default_backend):
@@ -77,73 +69,118 @@ def save_key_pair(private_key, private_key_filename, password=None, public_key_f
     pubfile.write(public_bytes)
 
 
-def normalize_RsaSignature2018(credential):
+def normalize_RsaSignature2018(document):
   """The normalisation operation will produce a canonical
-  representation of the credential according to the URDNA2015
+  representation of the document according to the URDNA2015
   canonicalisation method.
 
   Returns:
     string containing the N-Quad representation of the normalised
-    credential"""
-  return jsonld.normalize(credential, options={
+    document"""
+  return jsonld.normalize(document, options={
         'algorithm': 'URDNA2015',
         'format': 'application/n-quads'
   })
 
 
-def create_RsaSignature2018(credential, private_key):
-  """Given a JSON-LD credential and a RSAPrivateKey, will
-  return the signature of the credential according to the
-  RsaSignature2018 signature suite specification
+def create_verify_hash(canonical, creator, created=None, nonce=None, domain=None):
+  """Given a canonicalised JSON-LD document, returns the verification
+  hash of the document and the options passed in accoding to the
+  LinkedDataSignatures specification.
+
+  Returns:
+    bytes containing the hash of the document and the options
+  """
+  # Add a datetime if one is not provided
+  if created is None: created = datetime.datetime.utcnow()
+  # Creating a copy of input options
+  options = {
+    'sec:creator': creator,
+    'sec:created': created
+  }
+  if nonce is not None: options['sec:nonce'] = nonce
+  if domain is not None: options['sec:domain']: domain
+
+  # Step 4.1 Canonicalise the options
+  canonicalized_options = normalize_RsaSignature2018(options)
+  # Step 4.2 compute the SHA256 hash of the options
+  option_hash = hashes.Hash(hashes.SHA256(), backend=default_backend())
+  option_hash.update(canonicalized_options.encode('utf-8'))
+  output = option_hash.finalize()
+  # Step 4.3 compute the SHA256 hash of the document
+  doc_hash = hashes.Hash(hashes.SHA256(), backend=default_backend())
+  doc_hash.update(canonical.encode('utf-8'))
+  # Append to the earlier hash
+  output += doc_hash.finalize()
+  return output
+
+
+def sign_with_LinkedDataSignature(credential, private_key, key_id):
+  """Given a JSON-LD credential and a RSAPrivateKey, will return the
+  signed credential according to the LinkedDataSignature 1.0
+  specification. This implementation using the RsaSignature2018
+  signature suite.
 
   Parameters:
     credential: JSON-LD document in compact representation
     private_key: rsa.PrivateKey object
+    key_id: The JSON-LD @id (identifier) of the private/public keypair
+        used
 
   Returns:
-    bytes containing the signature
+    signed credential
   """
-  normalized = normalize_RsaSignature2018(credential)
-  return private_key.sign(data=normalized.encode('utf-8'),
+  # Step 1: copy the credential
+  output = copy.deepcopy(credential)
+  # Step 2: canonicalise
+  canonicalised = normalize_RsaSignature2018(credential)
+  # Step 3: create verify hash, setting the creator and created options
+  created = datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%S%Z')
+  tbs = create_verify_hash(canonicalised, creator=key_id, created=created)
+  # Step 4: sign tbs using private key and signature algorithm
+  signature_value = private_key.sign(data=tbs,
+                                     padding=padding.PKCS1v15(),
+                                     algorithm=hashes.SHA256())
+  # Step 5: add a signature node to output
+  output['ocd:signature'] = cred.create_ld_signature(signature_value,
+                                                     creator=key_id,
+                                                     created=created)
+  return output
+
+
+def verify_LinkedDataSignature(signed_credential):
+  # Step 1: Get the cryptographic key and rsa object
+  # Step 1b: verifying owner from sec_key is left as an exercise
+  sec_key, rsa_public_key = cred.public_key_from_issuer(cred.issuer_from_credential(signed_credential))
+  # Step 2: copy signed document into document
+  credential = copy.deepcopy(signed_credential)
+  # Step 3: removing the signature node from the credential for comparison
+  signature = credential.pop('ocd:signature')
+  # Step 4: canonicalise
+  canonicalised = normalize_RsaSignature2018(credential)
+  # Step 5: create verify hash, setting the creator and created options
+  tbv = create_verify_hash(canonicalised,
+                           creator=signature.get('sec:creator', ''),
+                           created=signature.get('sec:created', ''))
+  # Step 6: verify tbv using the public key
+  try:
+    signature_value = cred.signature_bytes_from_ld_signature(signature)
+    rsa_public_key.verify(signature_value, data=tbv,
                           padding=padding.PKCS1v15(),
                           algorithm=hashes.SHA256())
-
-
-def verify_RsaSignature2018(credential, public_key, signature):
-  """Given a JSON-LD credential and a RSAPublicKey, will
-  verify the signature of the credential according to the
-  RsaSignature2018 signature suite specification
-
-  Parameters:
-    credential: JSON-LD document in compact representation
-    public_key: rsa.PublicKey object
-    signature: bytes of the signature
-  """
-  normalized = normalize_RsaSignature2018(credential)
-  try:
-    public_key.verify(signature, data=normalized.encode('utf-8'),
-                      padding=padding.PKCS1v15(),
-                      algorithm=hashes.SHA256())
     return True
   except InvalidSignature as e:
     return False
 
 
-def sign_credential_in_file(filename, keyfile, public_key_url):
+def sign_credential_in_file(filename, key_file, key_id):
   credential = cred.create_credential(filename)
-  private_key, public_key = load_key_pair(keyfile)
-  cred.set_issuer_public_key(credential, issuer_public_key=public_key,
-                             issuer_public_key_url=public_key_url)
+  private_key, public_key = load_key_pair(key_file)
+  cred.set_issuer_public_key(credential,
+                             issuer_public_key=public_key,
+                             issuer_key_id=key_id)
 
-  signature = create_RsaSignature2018(credential, private_key)
-  verified = verify_RsaSignature2018(credential, public_key, signature)
-  assert verified == True
-  print('Credential signature bytes verified using public key in %s.pub' % (keyfile,),
-        file=sys.stderr)
-
-  signed_credential = copy.deepcopy(credential)
-  ld_signature = cred.create_ld_signature(signature, public_key_url)
-  signed_credential['ocd:signature'] = ld_signature
+  signed_credential = sign_with_LinkedDataSignature(credential, private_key, key_id)
   print(json.dumps(signed_credential, indent=2))
   print('Credential created', file=sys.stderr)
 
@@ -152,16 +189,10 @@ def verify_credential_in_file(filename):
   with open(filename, 'r') as f:
     signed_credential = json.load(f)
 
+  verified = verify_LinkedDataSignature(signed_credential)
+  assert verified == True
 
-  unsigned_credential = copy.deepcopy(signed_credential)
-  # Removing the signature element from the credential for comparison
-  ld_signature = unsigned_credential.pop('ocd:signature')
-
-  signature_bytes = cred.signature_bytes_from_ld_signature(ld_signature)
-  sec_key, rsa_public_key = cred.public_key_from_issuer(cred.issuer_from_credential(unsigned_credential))
-  verified_from_doc = verify_RsaSignature2018(unsigned_credential, rsa_public_key, signature_bytes)
-  assert verified_from_doc == True
-
+  sec_key, _ = cred.public_key_from_issuer(cred.issuer_from_credential(signed_credential))
   print('Credential signature in %(filename)r verified using public key: %(key_id)s' %
         {
           'filename': filename,
@@ -180,15 +211,17 @@ if __name__ == '__main__':
   parser.add_argument('-k', '--key', action='store', dest='keyfile', default=None,
                       help='Filepath to the private key to sign document with. '
                       'Public key should found at <KEYFILE>.pub.'
-                      'Required with --sign option')
-
+                      'Required in --sign mode ')
+  parser.add_argument('--keyid', action='store', dest='keyid',
+                      default='https://example.com/keys/exampleKey',
+                      help='Identifier for the key which will be used as '
+                      'issuer.publicKey.@id')
   args = parser.parse_args()
+
   if args.sign:
     if not args.keyfile:
       parser.error('Signing mode requires keyfile(s) containing private key')
-
-    public_key_url = 'https://example.com/keys/exampleKey'
-    sign_credential_in_file(args.file, args.keyfile, public_key_url)
+    sign_credential_in_file(args.file, args.keyfile, args.keyid)
   elif args.verify:
     verify_credential_in_file(args.file)
   else:
