@@ -78,6 +78,9 @@ def create_verify_hash(suite, canonical, creator, created=None, nonce=None, doma
   Returns:
     bytes containing the hash of the document and the options
   """
+  # Following the algorithm at
+  # https://w3c-dvcg.github.io/ld-signatures/#create-verify-hash-algorithm
+  # 1 Feb 2019
   # Add a datetime if one is not provided
   if created is None: created = datetime.datetime.utcnow()
   # Creating a copy of input options
@@ -114,6 +117,9 @@ def sign_with_LinkedDataSignature(credential, private_key, key_id, suite=None):
   """
   if suite is None: suite = suites.RsaSignature2018()
 
+  # Following the algorithm at:
+  # https://w3c-dvcg.github.io/ld-signatures/#signature-algorithm
+  # 1 Feb 2019
   # Step 1: copy the credential
   output = copy.deepcopy(credential)
   # Step 2: canonicalise
@@ -144,6 +150,9 @@ def verify_LinkedDataSignature(signed_credential, suite=None):
   """
   if suite is None: suite = suites.RsaSignature2018()
 
+  # Following the algorithm at:
+  # https://w3c-dvcg.github.io/ld-signatures/#signature-verification-algorithm
+  # 1 Feb 2019
   # Step 1: Get the cryptographic key and rsa object
   # Step 1b: verifying owner from sec_key is left as an exercise
   sec_key, rsa_public_key = cred.public_key_from_issuer(cred.issuer_from_credential(signed_credential))
