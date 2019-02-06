@@ -83,5 +83,3 @@ def public_key_from_issuer(issuer):
   public_key_pem = public_key['sec:publicKeyPem']
   rsa_public_key = s11n.load_pem_public_key(public_key_pem.encode('utf-8'), default_backend())
   return public_key, rsa_public_key
-
-
