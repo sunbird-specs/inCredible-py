@@ -11,7 +11,7 @@ These instructions assume that you have cloned the respository locally, and are 
 $ pip3 install .
 ```
 
-3. Run the script to sign a credential given a private key and public key. The public key should be in the same directory as the public key with the extension `.pub`
+3. Run the script to sign a credential given a private key and public key (You could use [ssh-keygen to create a keypair](https://www.digitalocean.com/docs/droplets/how-to/add-ssh-keys/create-with-openssh/). Instead of saving the keypair to the default location, save to a location of your choice). The public key should be in the same directory as the private key with the extension `.pub`
 
 ```shell
 $ python3 scripts/signature.py --key <path_to_private_key> --sign <path_to_credential_file>
