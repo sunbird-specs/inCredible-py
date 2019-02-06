@@ -4,6 +4,7 @@ credential.py
 module to help manage a credential JSON-LD document
 """
 import base64
+import datetime
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization as s11n
 import json
@@ -28,10 +29,10 @@ def issuer_from_credential(credential):
   return credential['ob:badge']['ocd:awardedBy']
 
 
-def set_issuer_public_key(credential, issuer_public_key, issuer_public_key_url):
+def set_issuer_public_key(credential, issuer_public_key, issuer_key_id):
   issuer = issuer_from_credential(credential)
   issuer['ocd:publicKey'] = create_cryptographic_key(issuer_public_key,
-                                                     issuer_public_key_url,
+                                                     issuer_key_id,
                                                      owner=issuer['@id'])
 
 
@@ -48,17 +49,18 @@ def create_cryptographic_key(public_key, key_url, owner):
   }
 
 
-## Signatures
-def create_ld_signature(signature_bytes, public_key_url):
+def create_ld_signature(signature_bytes, creator, created, sig_type=None):
   """
   Parameters
     signautre: signature bytes object
   """
+  if sig_type is None: sig_type = "ocd:RsaSignature2018"
+
   b64signature = base64.urlsafe_b64encode(signature_bytes)
   return {
-    "@type": "ocd:RsaSignature2018",
-    "sec:creator": public_key_url,
-    "sec:created": "2019-01-22T12:38:44Z",
+    "@type": sig_type,
+    "sec:creator": creator,
+    "sec:created": created,
     "sec:signatureValue": b64signature.decode('utf-8')
   }
 
@@ -75,7 +77,8 @@ def signature_bytes_from_ld_signature(ld_signature):
 
 
 def public_key_from_issuer(issuer):
-  """Retrieves the public key from the credential and also converts to rsa_public_key. """
+  """Retrieves the public key from the credential and also converts to
+  rsa_public_key. """
   public_key = issuer['ocd:publicKey']
   public_key_pem = public_key['sec:publicKeyPem']
   rsa_public_key = s11n.load_pem_public_key(public_key_pem.encode('utf-8'), default_backend())
