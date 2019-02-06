@@ -14,7 +14,8 @@ from escs import suites
 import sys
 
 
-def load_key_pair(private_key_filename, public_key_filename=None, password=None, backend_factory=default_backend):
+def load_key_pair(private_key_filename, public_key_filename=None, password=None,
+                  backend_factory=default_backend):
   """Given a private key file and a public key file reads from file and returns
   the pair.
 
