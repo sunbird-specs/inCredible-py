@@ -3,9 +3,12 @@ signatures.py
 
 module implementing the rsa_signature_2018 signature suite and others
 """
+import binascii
 import copy
+from cryptography.exceptions import InvalidSignature
 from escs import credential as cred
 import datetime
+import sys
 
 
 class SignatureProtocol(object):
@@ -123,4 +126,8 @@ class LinkedDataSignature(SignatureProtocol):
       suite.verify(signature_value, tbv, rsa_public_key)
       return True
     except InvalidSignature as e:
+      print(e.msg, file=sys.stderr)
+      return False
+    except binascii.Error as e:
+      print("ERROR: Signature invalid: "+str(e), file=sys.stderr)
       return False
