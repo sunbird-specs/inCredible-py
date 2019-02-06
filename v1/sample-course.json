@@ -10,7 +10,7 @@
   },
   "ob:badge": {
     "@id": "https://example.pasdc.org/certs/courses/ASCL3",
-    "@type": "BadgeClass",
+    "@type": "ob:BadgeClass",
     "schema:name": "Automotive Service Technician Course",
     "schema:description": " ... ",
     "schema:image": "data:image/png;base64,<base64-encoded-png-data>",
@@ -94,7 +94,7 @@
       "schema:name": "<Name of recipient>"
     },
     "ocd:assessment": {
-      "@type": "grade",
+      "@type": "ocd:grade",
       "ocd:value": "B+",
       "ocd:maxValue": "A+",
       "ob:related": {
