@@ -7,9 +7,9 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives import serialization as s11n
-import datetime
 import json
 from pyld import jsonld
+from escs import signatures
 from escs import suites
 import sys
 
@@ -42,9 +42,8 @@ def load_key_pair(private_key_filename, public_key_filename=None, password=None,
 
 
 def save_key_pair(private_key, private_key_filename, password=None, public_key_filename=None):
-  """
-  Saves an RSA private key and its public key component to a file optionally
-  encrypting the private key with a password.
+  """Saves an RSA private key and its public key component to a file
+  optionally encrypting the private key with a password.
 
   Parameters:
     private_key: an RSA private key
@@ -71,111 +70,6 @@ def save_key_pair(private_key, private_key_filename, password=None, public_key_f
     pubfile.write(public_bytes)
 
 
-def create_verify_hash(suite, canonical, creator, created=None, nonce=None, domain=None):
-  """Given a canonicalised JSON-LD document, returns the verification
-  hash of the document and the options passed in accoding to the
-  LinkedDataSignatures specification.
-
-  Returns:
-    bytes containing the hash of the document and the options
-  """
-  # Following the algorithm at
-  # https://w3c-dvcg.github.io/ld-signatures/#create-verify-hash-algorithm
-  # 1 Feb 2019
-  # Add a datetime if one is not provided
-  if created is None: created = datetime.datetime.utcnow()
-  # Creating a copy of input options
-  options = {
-    'sec:creator': creator,
-    'sec:created': created
-  }
-  if nonce is not None: options['sec:nonce'] = nonce
-  if domain is not None: options['sec:domain']: domain
-
-  # Step 4.1 Canonicalise the options
-  canonicalized_options = suite.normalize(options)
-  # Step 4.2 compute the hash of the options
-  output = suite.hash(canonicalized_options.encode('utf-8'))
-  # Step 4.3 compute the hash of the document and append
-  output += suite.hash(canonical.encode('utf-8'))
-  return output
-
-
-def sign_with_LinkedDataSignature(credential, private_key, key_id, suite=None):
-  """Given a JSON-LD credential and a RSAPrivateKey, will return the
-  signed credential according to the LinkedDataSignature 1.0
-  specification. This implementation using the RsaSignature2018
-  signature suite.
-
-  Parameters:
-    credential: JSON-LD document in compact representation
-    private_key: rsa.PrivateKey object
-    key_id: The JSON-LD @id (identifier) of the private/public keypair
-        used
-
-  Returns:
-    signed credential
-  """
-  if suite is None: suite = suites.RsaSignature2018()
-
-  # Following the algorithm at:
-  # https://w3c-dvcg.github.io/ld-signatures/#signature-algorithm
-  # 1 Feb 2019
-  # Step 1: copy the credential
-  output = copy.deepcopy(credential)
-  # Step 2: canonicalise
-  canonicalised = suite.normalize(credential)
-  # Step 3: create verify hash, setting the creator and created options
-  created = datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%S%Z')
-  tbs = create_verify_hash(suite, canonicalised, creator=key_id, created=created)
-  # Step 4: sign tbs using private key and signature algorithm
-  signature_value = suite.sign(tbs, private_key)
-  # Step 5: add a signature node to output
-  output['ocd:signature'] = cred.create_ld_signature(signature_value,
-                                                     creator=key_id,
-                                                     created=created)
-  return output
-
-
-def verify_LinkedDataSignature(signed_credential, suite=None):
-   """Given a signed JSON-LD credential, will verify the signature
-  according to the LinkedDataSignature 1.0 specification.
-  This implementation using the RsaSignature2018
-  signature suite.
-
-  Parameters:
-    signed_credential: signed JSON-LD document in compact representation
-
-  Returns:
-    True if the signature is valid, False otherwise
-  """
-  if suite is None: suite = suites.RsaSignature2018()
-
-  # Following the algorithm at:
-  # https://w3c-dvcg.github.io/ld-signatures/#signature-verification-algorithm
-  # 1 Feb 2019
-  # Step 1: Get the cryptographic key and rsa object
-  # Step 1b: verifying owner from sec_key is left as an exercise
-  sec_key, rsa_public_key = cred.public_key_from_issuer(cred.issuer_from_credential(signed_credential))
-  # Step 2: copy signed document into document
-  credential = copy.deepcopy(signed_credential)
-  # Step 3: removing the signature node from the credential for comparison
-  signature = credential.pop('ocd:signature')
-  # Step 4: canonicalise
-  canonicalised = suite.normalize(credential)
-  # Step 5: create verify hash, setting the creator and created options
-  tbv = create_verify_hash(suite, canonicalised,
-                           creator=signature.get('sec:creator', ''),
-                           created=signature.get('sec:created', ''))
-  # Step 6: verify tbv using the public key
-  try:
-    signature_value = cred.signature_bytes_from_ld_signature(signature)
-    suite.verify(signature_value, data=tbv, public_key)
-    return True
-  except InvalidSignature as e:
-    return False
-
-
 def sign_credential_in_file(filename, key_file, key_id):
   credential = cred.create_credential(filename)
   private_key, public_key = load_key_pair(key_file)
@@ -183,7 +77,8 @@ def sign_credential_in_file(filename, key_file, key_id):
                              issuer_public_key=public_key,
                              issuer_key_id=key_id)
 
-  signed_credential = sign_with_LinkedDataSignature(credential, private_key, key_id)
+  signature = signatures.LinkedDataSignature(suites.RsaSignature2018())
+  signed_credential = signature.sign(credential, private_key, key_id)
   print(json.dumps(signed_credential, indent=2))
   print('Credential created', file=sys.stderr)
 
@@ -192,7 +87,8 @@ def verify_credential_in_file(filename):
   with open(filename, 'r') as f:
     signed_credential = json.load(f)
 
-  verified = verify_LinkedDataSignature(signed_credential)
+  signature = signatures.LinkedDataSignature(suites.RsaSignature2018())
+  verified = signature.verify(signed_credential)
   assert verified == True
 
   sec_key, _ = cred.public_key_from_issuer(cred.issuer_from_credential(signed_credential))
