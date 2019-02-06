@@ -6,6 +6,7 @@
     "ob": "https://w3id.org/openbadges/v2#",
     "schema": "http://schema.org/",
     "sec": "https://w3id.org/security/v1#",
+    "wid": "https://w3id.org/identity/v1",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
 
     "AlignmentObject": "schema:AlignmentObject",
@@ -19,7 +20,7 @@
     "Duration": "ocd:Duration",
     "IdentityComponent": "ocd:IdentityComponent",
     "LinkedDataSignature2015": "sec:LinkedDataSignature2015",
-    "RsaSignature2018": "sec:RsaSignature2018",
+    "RsaSignature2018": "wid:RsaSignature2018",
     "SignatoryExtension": "ocd:SignatoryExtension",
     "TrainingEvidence": "ocd:TrainingEvidence",
 
