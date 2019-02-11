@@ -1,0 +1,90 @@
+{
+  "@context": {
+    "ocd": "https://msde.gov.in/dgt/opencreds/v1#",
+    "ob": "https://w3id.org/openbadges/v2#"
+  },
+  "@id": "https://www.example.com/certs/2018/9900001234.json",
+  "@type": [
+    "ocd:Credential",
+    "ob:Extension",
+    "ocd:CertificateExtension"
+  ],
+  "ob:badge": {
+    "@id": "urn:uuid:ec58b28e-a6ab-49c2-a24d-ebefa02476cd",
+    "@type": "/BadgeClass",
+    "ocd:awardedBy": {
+      "@id": "tag:example.com,2009-11-28:#company.json",
+      "@type": "ocd:AwardingBody",
+      "schema:email": "certificates@example.com",
+      "schema:image": "https://www.example.com/images/logo.png",
+      "schema:name": "Example Training Corp",
+      "ocd:publicKey": {
+        "@id": "https://example.com/keys/exampleKey",
+        "@type": "ob:CryptographicKey",
+        "sec:owner": "tag:example.com,2009-11-28:#company.json",
+        "sec:publicKeyPem": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAww1gxguBC9zwc9y7GoGi\ncV2U2FJ+6tD025hxTNxF15ZztAfkJyv+a8mI9KwYIk17SDU4SfJa3us7U5O5yMwj\nBcERCNWKq3AFqcCkzzA5ArIUL4TeSpepGjhb7ZYL2YO2VtTPSKo2TseTUOKzdXdw\nEDVe388cW/NWmJ6dmfhVwO48Utpi9cT3PFPoFfdeOK1tgfNmz1TXJ5v1QUqmADHf\nAXMUrptQ9fst8ncJszJgqbXh7reE0B+j5XyV3LIx7/4CGrMCsocTCeBstI6FwF8t\n1L3xkXb+KvYCAXHBJdbh3TMBETwLpc3lfHsOq4lE1DGkvtGJu/9rNH2BiWNPZf/c\nswIDAQAB\n-----END PUBLIC KEY-----\n"
+      }
+    },
+    "schema:description": "Content Marketing Course",
+    "schema:name": "Certificate of Participation"
+  },
+  "ob:narrative": "Issued for participating in Content Marketing Course in association with Partner Marketing Solutions",
+  "ob:recipient": {
+    "@type": "ob:email",
+    "ob:hashed": "true",
+    "ob:identity": "sha256$bdeffdadbd28657adcead3825fdb23875dab8e928ad8d68f6",
+    "ob:name": "Example Recipient Name",
+    "ob:salt": "bluewater"
+  },
+  "ob:verification": {
+    "@type": "ocd:LinkedDataSignatures"
+  },
+  "ocd:awardedOn": "2018-08-11T09:27:30.613UTC",
+  "ocd:signatory": [
+    {
+      "@type": [
+        "ocd:CompositeIdentity",
+        "ob:Extension",
+        "ocd:SignatoryExtension"
+      ],
+      "ocd:components": [
+        {
+          "@type": [
+            "ocd:IdentityComponent",
+            "schema:name"
+          ],
+          "ob:identity": "Example Father Name",
+          "ocd:annotation": "FATHER"
+        },
+        {
+          "@type": [
+            "ocd:IdentityComponent",
+            "ocd:photo"
+          ],
+          "ob:identity": "data:image/jpeg;base64,<base64 jpg image>"
+        }
+      ],
+      "ocd:designation": "CEO, Example Training Corp",
+      "schema:name": "Example Signatory Name",
+      "schmea:image": "https://example.com/p/ceo/sign-image.jpg"
+    },
+    {
+      "@type": [
+        "/IdentityObject",
+        "ocd:urn",
+        "ob:Extension",
+        "ocd:SignatoryExtension"
+      ],
+      "ob:identity": "urn:in.gov.eci.voter:<Voter #>",
+      "ocd:designation": "Director, Partner Marketing Solutions",
+      "schema:image": "https://example2.com/edb/l:dir/mkt/sign-image.jpg",
+      "schema:name": "<Name of signatory>"
+    }
+  ],
+  "ocd:signature": {
+    "@type": "ocd:RsaSignature2018",
+    "sec:creator": "https://example.com/keys/exampleKey",
+    "sec:created": "2019-02-11T20:27:43",
+    "sec:signatureValue": "JtEDyK8U48koE4JdhoE-a7R9SrDsJ_9a3xNmis0WAD12LhvULmDgV2VQM3j76IHDI3CDOvDdBCtp8SUCtIi5aSzWju98XVMnFZx4uaATt14Bb7kn0lYleehGhiV2PYuidAZY2Q4t37cozvL1CnPYo_KME4B5mDlKh8d0vtBgMLm65FzhNuhs6WOI-pOOy3FfPrWdWHZbvg4nORryOO0hmN8B80DLDZfw9FJTblfJSsnM4mVfX4tmekjmMHgpcDOWc2jNJq_RcnPPWfcIIvRAAX1gIpUiRyPvCR5ix9RewKP8kFPxEoq0PCkyrzQS65WZI98fVDrdMM0ABYhYs7Aw-Q=="
+  }
+}
