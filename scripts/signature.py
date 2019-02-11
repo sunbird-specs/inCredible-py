@@ -65,7 +65,7 @@ def save_key_pair(private_key, private_key_filename, password=None, public_key_f
 
 
 def sign_credential_in_file(filename, key_file, key_id):
-  credential = cred.create_credential(filename)
+  credential = cred.load_credential(filename)
   private_key, public_key = load_key_pair(key_file)
   cred.set_issuer_public_key(credential,
                              issuer_public_key=public_key,
@@ -78,9 +78,7 @@ def sign_credential_in_file(filename, key_file, key_id):
 
 
 def verify_credential_in_file(filename):
-  with open(filename, 'r') as f:
-    signed_credential = json.load(f)
-
+  signed_credential = cred.load_credential(filename)
   signature = signatures.LinkedDataSignature(suites.RsaSignature2018())
   verified = signature.verify(signed_credential)
   assert verified == True
