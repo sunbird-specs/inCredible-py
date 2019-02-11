@@ -11,12 +11,15 @@ import json
 from pyld import jsonld
 
 # Credentials
-def create_credential(filename):
+def load_credential(filename):
   """Reads a credential document from filename and returns the compact
   JSON-LD representation of the credential."""
   with open(filename, 'r') as f:
     doc = json.load(f)
+  return compact_credential(doc)
 
+def compact_credential(doc):
+  """Converts a JSON-LD credential into its compact representation."""
   context = doc.pop('@context', {})
   jsonld.set_document_loader(jsonld.requests_document_loader(timeout=5))
   credential = jsonld.compact(doc, context)
