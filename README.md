@@ -14,13 +14,15 @@ $ pip3 install .
 3. Run the script to sign a credential given a private key and public key (You could use [ssh-keygen to create a keypair](https://www.digitalocean.com/docs/droplets/how-to/add-ssh-keys/create-with-openssh/). Instead of saving the keypair to the default location, save to a location of your choice). The public key should be in the same directory as the private key with the extension `.pub`
 
 ```shell
-$ python3 scripts/signature.py --key <path_to_private_key> --sign <path_to_credential_file>
+$ python3 scripts/sign.py --key <path_to_private_key> --keyid <id of key> --sign <path_to_credential_file>
 ```
 
 This will run the script and output a signed version of the credential in `credential_file`. This output can be re-directed to a file:
 
 ```shell
-$ python3 scripts/signature.py --key <path_to_private_key> --sign <path_to_credential_file> > signed_credential.json
+$ python3 scripts/signature.py --key <path_to_private_key> \
+    --keyid https://example.com/keys/exampleKey \
+    --sign <path_to_credential_file> > signed_credential.json
 ```
 
 4. Verify the signed document using the public key contained in the credential
@@ -28,3 +30,5 @@ $ python3 scripts/signature.py --key <path_to_private_key> --sign <path_to_crede
 ```shell
 $ python3 scripts/signature.py --verify signed_credential.json
 ```
+
+5. To see detailed output during signing or verification use the `-t` or `--trace` flag which outputs detailed tracing information to stderr.

@@ -7,8 +7,8 @@ import binascii
 import base64
 import copy
 from cryptography.exceptions import InvalidSignature
-from escs import credential as cred
 import datetime
+from skillcreds import credential as cred
 import sys
 
 

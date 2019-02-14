@@ -1,9 +1,9 @@
 import argparse
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization as s11n
-from escs import credential as cred
-from escs import signatures
-from escs import suites
+from skillcreds import credential as cred
+from skillcreds import signatures
+from skillcreds import suites
 import json
 import sys
 

@@ -1,10 +1,10 @@
 from distutils.core import setup
 
-setup(name='escs',
-      version='0.0',
+setup(name='skillcreds',
+      version='0.1',
       description='Electronic Skills Credential Specification Utilities',
       url='https://bharatskills.gov.in/skills-credentials',
-      packages=['escs'],
+      packages=['skillcreds'],
       requires=[
         "cryptography (>=2.5, <2.6)",
         "PyLD (>=1.0.4, <1.1)",
