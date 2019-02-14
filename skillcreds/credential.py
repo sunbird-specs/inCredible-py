@@ -57,7 +57,8 @@ def public_key_from_issuer(issuer):
   """Retrieves the public key from the credential and also converts to
   rsa_public_key. """
   public_key = issuer['ocd:publicKey']
-  public_key_bytes = public_key['sec:publicKeyPem'].encode('utf8')
+  public_key_pem = public_key['sec:publicKeyPem']
+  public_key_bytes = public_key_pem.encode('utf8')
   rsa_public_key = s11n.load_pem_public_key(public_key_bytes, default_backend())
   return public_key, rsa_public_key
 
