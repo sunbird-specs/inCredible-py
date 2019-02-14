@@ -4,6 +4,7 @@ signatures.py
 module implementing the rsa_signature_2018 signature suite and others
 """
 import binascii
+import base64
 import copy
 from cryptography.exceptions import InvalidSignature
 from escs import credential as cred
@@ -24,8 +25,9 @@ class SignatureProtocol(object):
 
 class LinkedDataSignature(SignatureProtocol):
 
-  def __init__(self, suite):
+  def __init__(self, suite, trace=False):
     self.suite = suite
+    self.trace = trace
 
   def create_verify_hash(self, canonical, creator, created=None, nonce=None, domain=None):
     """Given a canonicalised JSON-LD document, returns the verification
@@ -39,7 +41,8 @@ class LinkedDataSignature(SignatureProtocol):
     # https://w3c-dvcg.github.io/ld-signatures/#create-verify-hash-algorithm
     # 1 Feb 2019
     # Add a datetime if one is not provided
-    if created is None: created = datetime.datetime.utcnow()
+    trace = self.trace
+    if created is None: created = datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S%Z')
     # Creating a copy of input options
     options = {
       'sec:creator': creator,
@@ -50,9 +53,11 @@ class LinkedDataSignature(SignatureProtocol):
 
     suite = self.suite
     # Step 4.1 Canonicalise the options
-    canonicalized_options = suite.normalize(options)
+    canonicalised_options = suite.normalize(options)
+    if trace:
+      print("Norm opts:\n"+canonicalised_options, file=sys.stderr)
     # Step 4.2 compute the hash of the options
-    output = suite.hash(canonicalized_options.encode('utf-8'))
+    output = suite.hash(canonicalised_options.encode('utf-8'))
     # Step 4.3 compute the hash of the document and append
     output += suite.hash(canonical.encode('utf-8'))
     return output
@@ -73,6 +78,7 @@ class LinkedDataSignature(SignatureProtocol):
       signed credential
     """
     suite = self.suite
+    trace = self.trace
     # Following the algorithm at:
     # https://w3c-dvcg.github.io/ld-signatures/#signature-algorithm
     # 1 Feb 2019
@@ -80,9 +86,13 @@ class LinkedDataSignature(SignatureProtocol):
     output = copy.deepcopy(credential)
     # Step 2: canonicalise
     canonicalised = suite.normalize(credential)
+    if trace:
+      print("Normalized:\n"+canonicalised, file=sys.stderr)
     # Step 3: create verify hash, setting the creator and created options
-    created = datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%S%Z')
+    created = datetime.datetime.utnow().strftime('%Y-%m-%dT%H:%M:%S%Z')
     tbs = self.create_verify_hash(canonicalised, creator=key_id, created=created)
+    if trace:
+      print("TBS:\n"+base64.b64encode(tbs).decode('utf-8'), file=sys.stderr)
     # Step 4: sign tbs using private key and signature algorithm
     signature_value = suite.sign(tbs, private_key)
     # Step 5: add a signature node to output
@@ -104,6 +114,7 @@ class LinkedDataSignature(SignatureProtocol):
       True if the signature is valid, False otherwise
     """
     suite = self.suite
+    trace = self.trace
     # Following the algorithm at:
     # https://w3c-dvcg.github.io/ld-signatures/#signature-verification-algorithm
     # 1 Feb 2019
@@ -116,17 +127,21 @@ class LinkedDataSignature(SignatureProtocol):
     signature = credential.pop('ocd:signature')
     # Step 4: canonicalise
     canonicalised = suite.normalize(credential)
+    if trace:
+      print("Normalized:\n"+canonicalised, file=sys.stderr)
     # Step 5: create verify hash, setting the creator and created options
     tbv = self.create_verify_hash(canonicalised,
                                   creator=signature.get('sec:creator', ''),
                                   created=signature.get('sec:created', ''))
+    if trace:
+      print("TBV:\n"+base64.b64encode(tbv).decode('utf-8'), file=sys.stderr)
     # Step 6: verify tbv using the public key
     try:
       signature_value = cred.signature_bytes_from_ld_signature(signature)
       suite.verify(signature_value, tbv, rsa_public_key)
       return True
     except InvalidSignature as e:
-      print(e.msg, file=sys.stderr)
+      print("ERROR: Signature invalid!", file=sys.stderr)
       return False
     except binascii.Error as e:
       print("ERROR: Signature invalid: "+str(e), file=sys.stderr)

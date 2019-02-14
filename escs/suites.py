@@ -9,14 +9,18 @@ from cryptography.hazmat.primitives.asymmetric import padding
 
 from pyld import jsonld
 
+
 class SignatureSuite(object):
   def normalize(self, document):
     raise NotImplementedError()
 
-  def hash(self, document):
+  def hash(self, message):
     raise NotImplementedError()
 
-  def sign(self, document):
+  def sign(self, tbs, private_key):
+    raise NotImplementedError()
+
+  def verify(self, signature_value, tbv, public_key):
     raise NotImplementedError()
 
 

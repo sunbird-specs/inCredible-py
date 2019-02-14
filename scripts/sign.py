@@ -77,9 +77,9 @@ def sign_credential_in_file(filename, key_file, key_id):
   print('Credential created', file=sys.stderr)
 
 
-def verify_credential_in_file(filename):
+def verify_credential_in_file(filename, trace=False):
   signed_credential = cred.load_credential(filename)
-  signature = signatures.LinkedDataSignature(suites.RsaSignature2018())
+  signature = signatures.LinkedDataSignature(suites.RsaSignature2018(), trace)
   verified = signature.verify(signed_credential)
   assert verified == True
 
@@ -88,7 +88,7 @@ def verify_credential_in_file(filename):
         {
           'filename': filename,
           'key_id': sec_key['@id']
-        }, file=sys.stderr)
+        })
 
 
 if __name__ == '__main__':
@@ -107,6 +107,8 @@ if __name__ == '__main__':
                       default='https://example.com/keys/exampleKey',
                       help='Identifier for the key which will be used as '
                       'issuer.publicKey.@id')
+  parser.add_argument('-t', '--trace', action='store_true', dest='trace',
+                      default=False, help='Turn on tracing mode')
   args = parser.parse_args()
 
   if args.sign:
@@ -114,6 +116,6 @@ if __name__ == '__main__':
       parser.error('Signing mode requires keyfile(s) containing private key')
     sign_credential_in_file(args.file, args.keyfile, args.keyid)
   elif args.verify:
-    verify_credential_in_file(args.file)
+    verify_credential_in_file(args.file, args.trace)
   else:
     parser.error('Must choose one of sign (--sign) or verify (--verify) modes')

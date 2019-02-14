@@ -10,4 +10,4 @@ setup(name='escs',
         "PyLD (>=1.0.4, <1.1)",
         "requests (>=2.21.0, <2.22)",
       ],
-      scripts=['scripts/signature.py'])
+      scripts=['scripts/sign.py'])

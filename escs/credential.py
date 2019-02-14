@@ -18,6 +18,7 @@ def load_credential(filename):
     doc = json.load(f)
   return compact_credential(doc)
 
+
 def compact_credential(doc):
   """Converts a JSON-LD credential into its compact representation."""
   context = doc.pop('@context', {})
@@ -42,14 +43,23 @@ def set_issuer_public_key(credential, issuer_public_key, issuer_key_id):
 ## Keys
 def create_cryptographic_key(public_key, key_url, owner):
   """Create a LD CryptographicKey object from a RSA public key, with id=key_url, owner=owner."""
-  pk_bytes = public_key.public_bytes(encoding=s11n.Encoding.PEM,
-                                     format=s11n.PublicFormat.SubjectPublicKeyInfo)
+  public_key_bytes = public_key.public_bytes(encoding=s11n.Encoding.PEM,
+                                             format=s11n.PublicFormat.SubjectPublicKeyInfo)
   return {
     "@id": key_url,
     "@type": "ob:CryptographicKey",
     "sec:owner": owner,
     "sec:publicKeyPem": pk_bytes.decode('utf-8')
   }
+
+
+def public_key_from_issuer(issuer):
+  """Retrieves the public key from the credential and also converts to
+  rsa_public_key. """
+  public_key = issuer['ocd:publicKey']
+  public_key_bytes = public_key['sec:publicKeyPem'].encode('utf8')
+  rsa_public_key = s11n.load_pem_public_key(public_key_bytes, default_backend())
+  return public_key, rsa_public_key
 
 
 def create_ld_signature(signature_bytes, creator, created, sig_type=None):
@@ -77,12 +87,3 @@ def signature_bytes_from_ld_signature(ld_signature):
   """
   b64signature = ld_signature['sec:signatureValue'].encode('utf-8')
   return base64.urlsafe_b64decode(b64signature)
-
-
-def public_key_from_issuer(issuer):
-  """Retrieves the public key from the credential and also converts to
-  rsa_public_key. """
-  public_key = issuer['ocd:publicKey']
-  public_key_pem = public_key['sec:publicKeyPem']
-  rsa_public_key = s11n.load_pem_public_key(public_key_pem.encode('utf-8'), default_backend())
-  return public_key, rsa_public_key
