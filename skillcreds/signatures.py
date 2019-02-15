@@ -89,7 +89,7 @@ class LinkedDataSignature(SignatureProtocol):
     if trace:
       print("Normalized:\n"+canonicalised, file=sys.stderr)
     # Step 3: create verify hash, setting the creator and created options
-    created = datetime.datetime.utnow().strftime('%Y-%m-%dT%H:%M:%S%Z')
+    created = datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S%Z')
     tbs = self.create_verify_hash(canonicalised, creator=key_id, created=created)
     if trace:
       print("TBS:\n"+base64.b64encode(tbs).decode('utf-8'), file=sys.stderr)

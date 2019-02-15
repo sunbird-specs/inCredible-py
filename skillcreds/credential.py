@@ -49,7 +49,7 @@ def create_cryptographic_key(public_key, key_url, owner):
     "@id": key_url,
     "@type": "ob:CryptographicKey",
     "sec:owner": owner,
-    "sec:publicKeyPem": pk_bytes.decode('utf-8')
+    "sec:publicKeyPem": public_key_bytes.decode('utf-8')
   }
 
 
@@ -69,8 +69,7 @@ def create_ld_signature(signature_bytes, creator, created, sig_type=None):
     signautre: signature bytes object
   """
   if sig_type is None: sig_type = "ocd:RsaSignature2018"
-
-  b64signature = base64.urlsafe_b64encode(signature_bytes)
+  b64signature = base64.b64encode(signature_bytes)
   return {
     "@type": sig_type,
     "sec:creator": creator,
@@ -87,4 +86,4 @@ def signature_bytes_from_ld_signature(ld_signature):
                  document
   """
   b64signature = ld_signature['sec:signatureValue'].encode('utf-8')
-  return base64.urlsafe_b64decode(b64signature)
+  return base64.b64decode(b64signature)
