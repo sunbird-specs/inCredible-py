@@ -26,11 +26,11 @@ def load_key_pair(private_key_filename, public_key_filename=None, password=None,
 
   with open(private_key_filename, 'rb') as privfile:
     pemlines = privfile.read()
-  private_key = s11n.load_pem_private_key(pemlines, password, default_backend())
+  private_key = s11n.load_pem_private_key(pemlines, password, backend_factory())
 
   with open(public_key_filename, 'rb') as pubfile:
     pemlines = pubfile.read()
-  public_key = s11n.load_ssh_public_key(pemlines, default_backend())
+  public_key = s11n.load_ssh_public_key(pemlines, backend_factory())
 
   return private_key, public_key
 
