@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import argparse
 from pyld import jsonld
 from skillcreds import credential as cred
