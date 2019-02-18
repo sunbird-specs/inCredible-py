@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import argparse
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization as s11n
@@ -30,7 +32,7 @@ def load_key_pair(private_key_filename, public_key_filename=None, password=None,
 
   with open(public_key_filename, 'rb') as pubfile:
     pemlines = pubfile.read()
-  public_key = s11n.load_ssh_public_key(pemlines, backend_factory())
+  public_key = s11n.load_pem_public_key(pemlines, backend_factory())
 
   return private_key, public_key
 
@@ -64,14 +66,14 @@ def save_key_pair(private_key, private_key_filename, password=None, public_key_f
     pubfile.write(public_bytes)
 
 
-def sign_credential_in_file(filename, key_file, key_id):
+def sign_credential_in_file(filename, key_file, key_id, trace=False):
   credential = cred.load_credential(filename)
   private_key, public_key = load_key_pair(key_file)
   cred.set_issuer_public_key(credential,
                              issuer_public_key=public_key,
                              issuer_key_id=key_id)
 
-  signature = signatures.LinkedDataSignature(suites.RsaSignature2018())
+  signature = signatures.LinkedDataSignature(suites.RsaSignature2018(), trace)
   signed_credential = signature.sign(credential, private_key, key_id)
   print(json.dumps(signed_credential, indent=2))
   print('Credential created', file=sys.stderr)
@@ -115,7 +117,7 @@ if __name__ == '__main__':
   if args.sign:
     if not args.keyfile:
       parser.error('Signing mode requires keyfile(s) containing private key')
-    sign_credential_in_file(args.file, args.keyfile, args.keyid)
+    sign_credential_in_file(args.file, args.keyfile, args.keyid, args.trace)
   elif args.verify:
     verify_credential_in_file(args.file, args.trace)
   else:
