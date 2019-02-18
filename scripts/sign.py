@@ -99,6 +99,7 @@ if __name__ == '__main__':
                       help='Run in signing mode. Requires --key option')
   mode.add_argument('-v', '--verify', action='store_true',
                       help='Run in verification mode')
+
   parser.add_argument('-k', '--key', action='store', dest='keyfile', default=None,
                       help='Filepath to the private key to sign document with. '
                       'Public key should found at <KEYFILE>.pub.'

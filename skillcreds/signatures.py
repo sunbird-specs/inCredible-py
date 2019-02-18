@@ -13,10 +13,10 @@ import sys
 
 
 class SignatureProtocol(object):
-  def create_verify_hash(self, document):
+  def create_verify_hash(self, document, creator, created=None, nonce=None, domain=None):
     raise NotImplementedError()
 
-  def sign(self, document):
+  def sign(self, document, private_key, key_id):
     raise NotImplementedError()
 
   def verify(self, document):
