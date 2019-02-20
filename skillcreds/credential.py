@@ -9,6 +9,11 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization as s11n
 import json
 from pyld import jsonld
+from skillcreds import vocabs as voc
+
+# Vocabulary prefixes
+COMPACT_CONTEXT = dict((vocab.PREFIX, vocab.IRI) for vocab in [voc.ob, voc.scd, voc.sec, voc.schema])
+
 
 # Credentials
 def load_credential(filename):
@@ -21,23 +26,23 @@ def load_credential(filename):
 
 def compact_credential(doc):
   """Converts a JSON-LD credential into its compact representation."""
-  context = doc.pop('@context', {})
+  doc_context = doc.pop('@context', {})
   jsonld.set_document_loader(jsonld.requests_document_loader(timeout=5))
-  credential = jsonld.compact(doc, context)
+  credential = jsonld.compact(doc, COMPACT_CONTEXT, options={'expandContext': doc_context})
   return credential
 
 
 ## Issuer
 def issuer_from_credential(credential):
   """Extracts the issuer from a credential."""
-  return credential['ob:badge']['ocd:awardedBy']
+  return credential[voc.ob.BADGE][voc.ob.ISSUER]
 
 
 def set_issuer_public_key(credential, issuer_public_key, issuer_key_id):
   issuer = issuer_from_credential(credential)
-  issuer['ocd:publicKey'] = create_cryptographic_key(issuer_public_key,
-                                                     issuer_key_id,
-                                                     owner=issuer['@id'])
+  issuer[voc.sec.PUBLIC_KEY] = create_cryptographic_key(issuer_public_key,
+                                                        issuer_key_id,
+                                                        owner=issuer['@id'])
 
 
 ## Keys
@@ -47,17 +52,17 @@ def create_cryptographic_key(public_key, key_url, owner):
                                              format=s11n.PublicFormat.SubjectPublicKeyInfo)
   return {
     "@id": key_url,
-    "@type": "ob:CryptographicKey",
-    "sec:owner": owner,
-    "sec:publicKeyPem": public_key_bytes.decode('utf-8')
+    "@type": voc.sec.KEY,
+    voc.sec.OWNER: owner,
+    voc.sec.PUBLIC_KEY_PEM: public_key_bytes.decode('utf-8')
   }
 
 
 def public_key_from_issuer(issuer):
   """Retrieves the public key from the credential and also converts to
   rsa_public_key. """
-  public_key = issuer['ocd:publicKey']
-  public_key_pem = public_key['sec:publicKeyPem']
+  public_key = issuer[voc.sec.PUBLIC_KEY]
+  public_key_pem = public_key[voc.sec.PUBLIC_KEY_PEM]
   public_key_bytes = public_key_pem.encode('utf8')
   rsa_public_key = s11n.load_pem_public_key(public_key_bytes, default_backend())
   return public_key, rsa_public_key
@@ -68,13 +73,13 @@ def create_ld_signature(signature_bytes, creator, created, sig_type=None):
   Parameters
     signautre: signature bytes object
   """
-  if sig_type is None: sig_type = "ocd:RsaSignature2018"
+  if sig_type is None: sig_type = voc.scd.RSA_SIGNATURE_2018
   b64signature = base64.b64encode(signature_bytes)
   return {
     "@type": sig_type,
-    "sec:creator": creator,
-    "sec:created": created,
-    "sec:signatureValue": b64signature.decode('utf-8')
+    voc.sec.CREATOR: creator,
+    voc.sec.CREATED: created,
+    voc.sec.SIGNATURE_VALUE: b64signature.decode('utf-8')
   }
 
 
@@ -85,5 +90,5 @@ def signature_bytes_from_ld_signature(ld_signature):
                  key representing a base64 encoded signature of the
                  document
   """
-  b64signature = ld_signature['sec:signatureValue'].encode('utf-8')
+  b64signature = ld_signature[voc.sec.SIGNATURE_VALUE].encode('utf-8')
   return base64.b64decode(b64signature)

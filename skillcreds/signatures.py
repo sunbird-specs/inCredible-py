@@ -9,6 +9,7 @@ import copy
 from cryptography.exceptions import InvalidSignature
 import datetime
 from skillcreds import credential as cred
+from skillcreds.vocabs import sec
 import sys
 
 
@@ -45,11 +46,11 @@ class LinkedDataSignature(SignatureProtocol):
     if created is None: created = datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S%Z')
     # Creating a copy of input options
     options = {
-      'sec:creator': creator,
-      'sec:created': created
+      sec.CREATOR: creator,
+      sec.CREATED: created
     }
-    if nonce is not None: options['sec:nonce'] = nonce
-    if domain is not None: options['sec:domain']: domain
+    if nonce is not None: options[sec.NONCE] = nonce
+    if domain is not None: options[sec.DOMAIN]: domain
 
     suite = self.suite
     # Step 4.1 Canonicalise the options
@@ -96,9 +97,9 @@ class LinkedDataSignature(SignatureProtocol):
     # Step 4: sign tbs using private key and signature algorithm
     signature_value = suite.sign(tbs, private_key)
     # Step 5: add a signature node to output
-    output['ocd:signature'] = cred.create_ld_signature(signature_value,
-                                                       creator=key_id,
-                                                       created=created)
+    output[sec.SIGNATURE] = cred.create_ld_signature(signature_value,
+                                                     creator=key_id,
+                                                     created=created)
     return output
 
   def verify(self, signed_credential):
@@ -124,15 +125,18 @@ class LinkedDataSignature(SignatureProtocol):
     # Step 2: copy signed document into document
     credential = copy.deepcopy(signed_credential)
     # Step 3: removing the signature node from the credential for comparison
-    signature = credential.pop('ocd:signature')
+    signature = credential.pop(sec.SIGNATURE);
+    if sec.CREATOR not in signature: raise ValueError('Signed credential signature is missing '+sec.CREATOR+' field')
+    if sec.CREATED not in signature: raise ValueError('Signed credential signature is missing '+sec.CREATED+' field')
     # Step 4: canonicalise
     canonicalised = suite.normalize(credential)
     if trace:
       print("Normalized:\n"+canonicalised, file=sys.stderr)
     # Step 5: create verify hash, setting the creator and created options
+
     tbv = self.create_verify_hash(canonicalised,
-                                  creator=signature.get('sec:creator', ''),
-                                  created=signature.get('sec:created', ''))
+                                  creator=signature[sec.CREATOR],
+                                  created=signature[sec.CREATED])
     if trace:
       print("TBV:\n"+base64.b64encode(tbv).decode('utf-8'), file=sys.stderr)
     # Step 6: verify tbv using the public key
