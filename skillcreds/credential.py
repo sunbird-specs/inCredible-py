@@ -26,7 +26,7 @@ def load_credential(filename, compact=True):
 
 def compact_credential(doc):
   """Converts a JSON-LD credential into its compact representation."""
-  doc_context = doc.pop('@context', {})
+  doc_context = doc.get('@context', {})
   jsonld.set_document_loader(jsonld.requests_document_loader(timeout=5))
   credential = jsonld.compact(doc, COMPACT_CONTEXT, options={'expandContext': doc_context})
   return credential
