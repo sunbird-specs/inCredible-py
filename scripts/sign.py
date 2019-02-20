@@ -81,11 +81,16 @@ def sign_credential_in_file(filename, key_file, key_id, trace=False):
 
 def verify_credential_in_file(filename, trace=False):
   signed_credential = cred.load_credential(filename, compact=False)
-  signature = signatures.LinkedDataSignature(suites.RsaSignature2018(), trace)
-  verified = signature.verify(signed_credential)
-  assert verified == True
 
-  sec_key, _ = cred.public_key_from_issuer(cred.issuer_from_credential(signed_credential))
+  # Create a compacted version of the credential in app-specific vocabulary
+  # for readonly usage -- this is to ensure that compaction does not alter the
+  # shape of the signed credential thereby invalidating the signature.
+  compact_credential = cred.compact_credential(signed_credential)
+  sec_key, rsa_public_key = cred.public_key_from_issuer(cred.issuer_from_credential(compact_credential))
+
+  signature = signatures.LinkedDataSignature(suites.RsaSignature2018(), trace)
+  verified = signature.verify(signed_credential, rsa_public_key)
+  assert verified == True
   print('Credential signature in %(filename)r verified using public key: %(key_id)s' %
         {
           'filename': filename,
