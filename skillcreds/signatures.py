@@ -20,7 +20,7 @@ class SignatureProtocol(object):
   def sign(self, document, private_key, key_id):
     raise NotImplementedError()
 
-  def verify(self, document):
+  def verify(self, document, public_key):
     raise NotImplementedError()
 
 
@@ -102,7 +102,7 @@ class LinkedDataSignature(SignatureProtocol):
                                                      created=created)
     return output
 
-  def verify(self, signed_credential):
+  def verify(self, signed_credential, rsa_public_key):
     """Given a signed JSON-LD credential, will verify the signature
     according to the LinkedDataSignature 1.0 specification.
     This implementation using the RsaSignature2018
@@ -119,9 +119,7 @@ class LinkedDataSignature(SignatureProtocol):
     # Following the algorithm at:
     # https://w3c-dvcg.github.io/ld-signatures/#signature-verification-algorithm
     # 1 Feb 2019
-    # Step 1: Get the cryptographic key and rsa object
     # Step 1b: verifying owner from sec_key is left as an exercise
-    sec_key, rsa_public_key = cred.public_key_from_issuer(cred.issuer_from_credential(signed_credential))
     # Step 2: copy signed document into document
     credential = copy.deepcopy(signed_credential)
     # Step 3: removing the signature node from the credential for comparison
@@ -133,7 +131,6 @@ class LinkedDataSignature(SignatureProtocol):
     if trace:
       print("Normalized:\n"+canonicalised, file=sys.stderr)
     # Step 5: create verify hash, setting the creator and created options
-
     tbv = self.create_verify_hash(canonicalised,
                                   creator=signature[sec.CREATOR],
                                   created=signature[sec.CREATED])
