@@ -80,7 +80,7 @@ def sign_credential_in_file(filename, key_file, key_id, trace=False):
 
 
 def verify_credential_in_file(filename, trace=False):
-  signed_credential = cred.load_credential(filename)
+  signed_credential = cred.load_credential(filename, compact=False)
   signature = signatures.LinkedDataSignature(suites.RsaSignature2018(), trace)
   verified = signature.verify(signed_credential)
   assert verified == True

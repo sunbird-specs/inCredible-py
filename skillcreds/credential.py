@@ -16,12 +16,12 @@ COMPACT_CONTEXT = dict((vocab.PREFIX, vocab.IRI) for vocab in [voc.ob, voc.scd, 
 
 
 # Credentials
-def load_credential(filename):
+def load_credential(filename, compact=True):
   """Reads a credential document from filename and returns the compact
   JSON-LD representation of the credential."""
   with open(filename, 'r') as f:
     doc = json.load(f)
-  return compact_credential(doc)
+  return compact_credential(doc) if compact else doc
 
 
 def compact_credential(doc):
